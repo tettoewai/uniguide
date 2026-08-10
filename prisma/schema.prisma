@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  password      String
+  preferredCity String?
+  budget        Float?
+  preferredMajors String[] @default([])
+  role          Role     @default(STUDENT)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  marks        UserSubjectMark[]
+  hobbies      UserHobby[]
+  reviews      Review[]
+  favorites    Favorite[]
+  recommendations Recommendation[]
+}
+
+model Subject {
+  id   String @id @default(cuid())
+  name String @unique
+
+  requirements UniversitySubjectRequirement[]
+  userMarks    UserSubjectMark[]
+}
+
+model UserSubjectMark {
+  id        String @id @default(cuid())
+  userId    String
+  subjectId String
+  mark      Float
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, subjectId])
+}
+
+model University {
+  id                String   @id @default(cuid())
+  name              String
+  city              String
+  latitude          Float?
+  longitude         Float?
+  annualFee         Float?
+  totalMarkRequired Float?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  subjectReqs      UniversitySubjectRequirement[]
+  majors           UniversityMajor[]
+  scholarships     Scholarship[]
+  reviews          Review[]
+  favorites        Favorite[]
+  recommendations  Recommendation[]
+}
+
+model UniversitySubjectRequirement {
+  id           String @id @default(cuid())
+  universityId String
+  subjectId    String
+  minMark      Float
+
+  university University @relation(fields: [universityId], references: [id], onDelete: Restrict)
+  subject    Subject   @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+
+  @@unique([universityId, subjectId])
+}
+
+model Major {
+  id   String @id @default(cuid())
+  name String @unique
+
+  universityMajors UniversityMajor[]
+  hobbyLinks       MajorHobby[]
+}
+
+model UniversityMajor {
+  id           String @id @default(cuid())
+  universityId String
+  majorId      String
+
+  university University @relation(fields: [universityId], references: [id], onDelete: Restrict)
+  major      Major      @relation(fields: [majorId], references: [id], onDelete: Restrict)
+
+  @@unique([universityId, majorId])
+}
+
+model Hobby {
+  id    String @id @default(cuid())
+  name  String @unique
+  icon  String?
+  color String?
+
+  userLinks  UserHobby[]
+  majorLinks MajorHobby[]
+}
+
+model UserHobby {
+  id      String @id @default(cuid())
+  userId  String
+  hobbyId String
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Restrict)
+  hobby Hobby @relation(fields: [hobbyId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, hobbyId])
+}
+
+model MajorHobby {
+  id      String @id @default(cuid())
+  majorId String
+  hobbyId String
+
+  major Major @relation(fields: [majorId], references: [id], onDelete: Restrict)
+  hobby Hobby @relation(fields: [hobbyId], references: [id], onDelete: Restrict)
+
+  @@unique([majorId, hobbyId])
+}
+
+model Scholarship {
+  id           String @id @default(cuid())
+  universityId String
+  name         String
+  amount       Float?
+  type         String?
+
+  university University @relation(fields: [universityId], references: [id], onDelete: Restrict)
+}
+
+model Review {
+  id           String   @id @default(cuid())
+  userId       String
+  universityId String
+  rating       Int
+  comment      String?
+  createdAt    DateTime @default(now())
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Restrict)
+  university University @relation(fields: [universityId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, universityId])
+}
+
+model Favorite {
+  id           String @id @default(cuid())
+  userId       String
+  universityId String
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Restrict)
+  university University @relation(fields: [universityId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, universityId])
+}
+
+model Recommendation {
+  id           String   @id @default(cuid())
+  userId       String
+  universityId String
+  score        Float
+  createdAt    DateTime @default(now())
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Restrict)
+  university University @relation(fields: [universityId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, universityId])
+}
