@@ -35,10 +35,10 @@ export function FavoriteCard({
 
   return (
     <Link href={`/universities/${universityId}`} className="group/title">
-      <Card className="glass rounded-3xl transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl cursor-pointer">
+      <Card className="glass rounded-3xl transition-all duration-300 hover:scale-[1.02] cursor-pointer">
         <CardHeader className="flex-row items-start justify-between gap-2 space-y-0">
           <CardTitle className="text-base">
-            <span className="text-gradient font-display text-xl font-bold transition-colors">
+            <span className="font-display text-xl font-bold transition-colors">
               {name}
             </span>
           </CardTitle>
@@ -49,13 +49,13 @@ export function FavoriteCard({
             onClick={onRemove}
             disabled={isPending}
             aria-label="Remove from favorites"
-            className="rounded-full bg-white/70 shadow-sm"
+            className="rounded-full bg-card/60"
           >
             <Heart className="h-5 w-5 fill-rose-500 text-rose-500" />
           </Button>
         </CardHeader>
         <CardContent className="space-y-3">
-          <p className="flex items-center gap-1 text-sm text-zinc-500">
+          <p className="flex items-center gap-1 text-sm text-muted-foreground">
             <MapPin className="h-3.5 w-3.5 text-sky-500" />
             {city}
           </p>
@@ -64,7 +64,7 @@ export function FavoriteCard({
               <Badge
                 key={m}
                 variant="secondary"
-                className="rounded-full border-white/40 bg-white/80 text-zinc-600"
+                className="rounded-full border-border bg-secondary text-secondary-foreground"
               >
                 {m}
               </Badge>

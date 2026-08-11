@@ -49,10 +49,6 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 
   /* ---- UniGuide custom design tokens ---- */
-  --shadow-glow-xl: 0 0 60px -10px rgb(14 165 233 / 0.55);
-  --shadow-glow-blue: 0 12px 45px -10px rgb(14 165 233 / 0.45);
-  --shadow-glass: 0 8px 40px -12px rgb(12 74 110 / 0.18);
-  --shadow-card-soft: 0 1px 2px rgb(16 24 40 / 0.04), 0 16px 40px -20px rgb(16 24 40 / 0.12);
 
   --animate-float: float 6s ease-in-out infinite;
   --animate-float-slow: float 9s ease-in-out infinite;
@@ -131,7 +127,7 @@
 .dark {
   --background: oklch(0.17 0.03 250);
   --foreground: oklch(0.985 0.005 250);
-  --card: rgba(255, 255, 255, 0.06);
+  --card: rgba(255, 255, 255, 0.08);
   --card-foreground: oklch(0.985 0.005 250);
   --popover: oklch(0.22 0.04 250);
   --popover-foreground: oklch(0.985 0.005 250);
@@ -214,20 +210,14 @@
 
 /* ---- Solid color helpers ---- */
 .glass {
-  @apply border border-white/40 bg-white/60 backdrop-blur-xl shadow-glass;
+  @apply border border-border bg-card backdrop-blur-xl;
 }
 
 .glass-strong {
-  @apply border border-white/50 bg-white/75 backdrop-blur-2xl shadow-glass;
+  @apply border border-border bg-card backdrop-blur-2xl;
 }
 
-.text-gradient {
-  @apply text-sky-700;
-}
 
-.btn-gradient {
-  @apply bg-primary text-primary-foreground shadow-lg shadow-sky-300/60 transition-all duration-300 hover:bg-sky-600 hover:shadow-xl hover:shadow-sky-300/70;
-}
 
 /* ---- Leaflet custom markers ---- */
 .uniguide-marker-wrap {
@@ -248,8 +238,7 @@
   border-radius: 9999px;
   background: #0ea5e9;
   box-shadow:
-    0 0 0 4px rgb(255 255 255 / 0.95),
-    0 8px 24px -6px rgb(14 165 233 / 0.8);
+    0 0 0 4px rgb(255 255 255 / 0.95);
 }
 
 .uniguide-marker .marker-ping {

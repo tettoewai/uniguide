@@ -16,10 +16,10 @@ export default async function SettingsPage() {
   return (
     <div className="space-y-8">
       <div className="mb-2">
-        <h1 className="font-display text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl">
+        <h1 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
           Account settings
         </h1>
-        <p className="mt-3 max-w-2xl text-base text-zinc-500">
+        <p className="mt-3 max-w-2xl text-base text-muted-foreground">
           Update your name or reset your password.
         </p>
       </div>

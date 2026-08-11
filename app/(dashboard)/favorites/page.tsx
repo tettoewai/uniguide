@@ -21,11 +21,11 @@ export default async function FavoritesPage() {
         <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-rose-200/70 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600">
           Your shortlist
         </span>
-        <h1 className="text-gradient font-display text-4xl font-bold tracking-tight sm:text-5xl">
+        <h1 className="text-primary font-display text-4xl font-bold tracking-tight sm:text-5xl">
           Your favorites
         </h1>
-        <p className="mt-3 max-w-2xl text-base text-zinc-500">
-          Universities you’ve saved for later. Hover any card to remove it.
+        <p className="mt-3 max-w-2xl text-base text-muted-foreground">
+          Universities you&apos;ve saved for later. Hover any card to remove it.
         </p>
       </div>
 

@@ -28,7 +28,7 @@ import { cn } from '@/lib/utils'
 type City = { id: string; name: string; latitude: number | null; longitude: number | null }
 
 const inputClass =
-  'h-12 rounded-md border-0 bg-white/80 ring-1 ring-zinc-200/70 outline-none placeholder:text-zinc-400 focus:ring-2 focus:ring-sky-300'
+  'h-12 rounded-md border-0 bg-background/80 ring-1 ring-border outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-sky-300'
 
 export function CityAdmin({
   cities,
@@ -114,7 +114,7 @@ export function CityAdmin({
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-xs">
-          <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
+          <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -125,7 +125,7 @@ export function CityAdmin({
         </div>
         <Button
           onClick={openCreate}
-          className="h-12 rounded-full bg-primary px-8 shadow-lg shadow-sky-300/60 hover:bg-sky-600"
+          className="h-12 rounded-full bg-primary px-8 hover:bg-sky-600"
         >
           <Plus className="mr-1.5 size-4" />
           Add city
@@ -136,9 +136,9 @@ export function CityAdmin({
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className="px-5 text-zinc-400">Name</TableHead>
-              <TableHead className="text-zinc-400">Latitude</TableHead>
-              <TableHead className="text-zinc-400">Longitude</TableHead>
+              <TableHead className="px-5 text-muted-foreground">Name</TableHead>
+              <TableHead className="text-muted-foreground">Latitude</TableHead>
+              <TableHead className="text-muted-foreground">Longitude</TableHead>
               <TableHead className="w-28 px-5" />
             </TableRow>
           </TableHeader>
@@ -146,10 +146,10 @@ export function CityAdmin({
             {filtered.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={4} className="px-5 py-16 text-center">
-                  <p className="font-medium text-zinc-600">
+                  <p className="font-medium text-foreground">
                     {search ? 'No cities match your search.' : 'No cities yet.'}
                   </p>
-                  <p className="mt-1 text-sm text-zinc-400">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {search ? 'Try a different name.' : 'Add your first city.'}
                   </p>
                 </TableCell>
@@ -157,11 +157,11 @@ export function CityAdmin({
             ) : (
               filtered.map((city) => (
                 <TableRow key={city.id} className="hover:bg-sky-50/40">
-                  <TableCell className="px-5 font-semibold text-zinc-800">{city.name}</TableCell>
-                  <TableCell className="tabular-nums text-zinc-500">
+                  <TableCell className="px-5 font-semibold text-foreground">{city.name}</TableCell>
+                  <TableCell className="tabular-nums text-muted-foreground">
                     {city.latitude !== null ? city.latitude.toFixed(4) : '—'}
                   </TableCell>
-                  <TableCell className="tabular-nums text-zinc-500">
+                  <TableCell className="tabular-nums text-muted-foreground">
                     {city.longitude !== null ? city.longitude.toFixed(4) : '—'}
                   </TableCell>
                   <TableCell className="px-5">
@@ -172,7 +172,7 @@ export function CityAdmin({
                           size="icon-sm"
                           onClick={() => setConfirmId(null)}
                           aria-label="Cancel delete"
-                          className="rounded-full text-zinc-400"
+                          className="rounded-full text-muted-foreground"
                         >
                           <X className="size-4" />
                         </Button>
@@ -199,7 +199,7 @@ export function CityAdmin({
                           onClick={() => openEdit(city)}
                           disabled={isPending}
                           aria-label={`Edit ${city.name}`}
-                          className="rounded-full text-zinc-400 hover:bg-sky-50 hover:text-sky-600"
+                          className="rounded-full text-muted-foreground hover:bg-sky-50 hover:text-sky-600"
                         >
                           <Pencil className="size-4" />
                         </Button>
@@ -209,7 +209,7 @@ export function CityAdmin({
                           onClick={() => setConfirmId(city.id)}
                           disabled={isPending}
                           aria-label={`Delete ${city.name}`}
-                          className="rounded-full text-zinc-400 hover:bg-rose-50 hover:text-rose-600"
+                          className="rounded-full text-muted-foreground hover:bg-rose-50 hover:text-rose-600"
                         >
                           <Trash2 className="size-4" />
                         </Button>
@@ -288,14 +288,14 @@ export function CityAdmin({
                 type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
-                className="h-11 rounded-full border-white/50 bg-white/70 px-6"
+                className="h-11 rounded-full border-border bg-background/70 px-6"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={isPending}
-                className="h-11 rounded-full bg-primary px-6 shadow-lg shadow-sky-300/60 hover:bg-sky-600"
+                className="h-11 rounded-full bg-primary px-6 hover:bg-sky-600"
               >
                 {isPending ? (
                   <>

@@ -39,8 +39,8 @@ export function ReviewsAdmin({ reviews }: { reviews: ReviewRow[] }) {
     <div className="space-y-4">
       {reviews.length === 0 ? (
         <div className="glass rounded-3xl px-6 py-16 text-center">
-          <p className="font-medium text-zinc-600">No reviews yet.</p>
-          <p className="mt-1 text-sm text-zinc-400">Student reviews will appear here.</p>
+          <p className="font-medium text-foreground">No reviews yet.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Student reviews will appear here.</p>
         </div>
       ) : (
         reviews.map((r) => (
@@ -50,12 +50,12 @@ export function ReviewsAdmin({ reviews }: { reviews: ReviewRow[] }) {
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <span className="flex size-11 items-center justify-center rounded-2xl bg-sky-100 font-semibold text-sky-700">
+                <span className="flex size-11 items-center justify-center rounded-2xl bg-secondary font-semibold text-secondary-foreground">
                   {r.userName.charAt(0).toUpperCase()}
                 </span>
                 <div>
-                  <p className="font-semibold text-zinc-800">{r.userName}</p>
-                  <p className="text-sm text-zinc-500">{r.universityName}</p>
+                  <p className="font-semibold text-foreground">{r.userName}</p>
+                  <p className="text-sm text-muted-foreground">{r.universityName}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -63,7 +63,7 @@ export function ReviewsAdmin({ reviews }: { reviews: ReviewRow[] }) {
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
                       key={i}
-                      className={i < r.rating ? 'fill-amber-400 text-amber-400' : 'text-zinc-300'}
+                      className={i < r.rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground'}
                     />
                   ))}
                 </div>
@@ -74,7 +74,7 @@ export function ReviewsAdmin({ reviews }: { reviews: ReviewRow[] }) {
                       size="icon-sm"
                       onClick={() => setConfirmId(null)}
                       aria-label="Cancel delete"
-                      className="rounded-full text-zinc-400"
+                      className="rounded-full text-muted-foreground"
                     >
                       <X className="size-4" />
                     </Button>
@@ -100,7 +100,7 @@ export function ReviewsAdmin({ reviews }: { reviews: ReviewRow[] }) {
                     onClick={() => setConfirmId(r.id)}
                     disabled={isPending}
                     aria-label={`Delete review by ${r.userName}`}
-                    className="rounded-full text-zinc-400 hover:bg-rose-50 hover:text-rose-600"
+                    className="rounded-full text-muted-foreground hover:bg-rose-50 hover:text-rose-600"
                   >
                     <Trash2 className="size-4" />
                   </Button>
@@ -108,9 +108,9 @@ export function ReviewsAdmin({ reviews }: { reviews: ReviewRow[] }) {
               </div>
             </div>
             {r.comment ? (
-              <p className="mt-4 leading-relaxed text-zinc-700">{r.comment}</p>
+              <p className="mt-4 leading-relaxed text-foreground">{r.comment}</p>
             ) : null}
-            <p className="mt-3 text-xs text-zinc-400">
+            <p className="mt-3 text-xs text-muted-foreground">
               {new Date(r.createdAt).toLocaleDateString()}
             </p>
           </article>

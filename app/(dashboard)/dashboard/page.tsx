@@ -29,11 +29,11 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <div className="mb-2">
-        <h1 className="font-display text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl">
+        <h1 className="font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
           Hi, {session.user.name?.split(" ")[0]}
         </h1>
-        <p className="mt-3 max-w-2xl text-base text-zinc-500">
-          Here’s a quick overview of your profile.
+        <p className="mt-3 max-w-2xl text-base text-muted-foreground">
+          Here&apos;s a quick overview of your profile.
         </p>
       </div>
 
@@ -112,15 +112,15 @@ export default async function DashboardPage() {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="group relative overflow-hidden rounded-3xl border border-white/50 bg-white/60 p-6 shadow-card-soft backdrop-blur-md transition-all duration-300 hover:translate-y-[-2px] hover:shadow-xl">
+    <div className="group relative overflow-hidden rounded-3xl border border-border bg-card/60 p-6 backdrop-blur-md transition-all duration-300 hover:translate-y-[-2px]">
       <div
         aria-hidden
         className="pointer-events-none absolute -right-10 -top-10 size-24 rounded-full bg-sky-400/20 blur-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       />
-      <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
         {label}
       </p>
-      <p className="mt-1 text-xl font-bold tabular-nums text-zinc-800">
+      <p className="mt-1 text-xl font-bold tabular-nums text-card-foreground">
         {value}
       </p>
     </div>
@@ -137,8 +137,8 @@ function CardPanel({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="space-y-4 rounded-3xl border border-white/50 bg-white/60 p-7 shadow-card-soft backdrop-blur-md">
-      <h2 className="font-display text-xl font-bold tracking-tight text-zinc-800">
+    <div className="space-y-4 rounded-3xl border border-border bg-card/60 p-7 backdrop-blur-md">
+      <h2 className="font-display text-xl font-bold tracking-tight text-card-foreground">
         {title}
       </h2>
       {body}

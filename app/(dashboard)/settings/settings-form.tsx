@@ -26,10 +26,10 @@ export function SettingsForm({ name, email }: { name: string; email: string }) {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <section className="glass rounded-3xl p-6 sm:p-8">
-        <h2 className="font-display text-xl font-bold tracking-tight text-zinc-800">
+        <h2 className="font-display text-xl font-bold tracking-tight text-card-foreground">
           Profile
         </h2>
-        <p className="mt-1 text-sm text-zinc-500">Your full name shown across UniGuide.</p>
+        <p className="mt-1 text-sm text-muted-foreground">Your full name shown across UniGuide.</p>
         <form action={nameAction} className="mt-6 space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
@@ -38,7 +38,7 @@ export function SettingsForm({ name, email }: { name: string; email: string }) {
               name="name"
               defaultValue={name}
               required
-              className="h-12 rounded-md border-0 bg-white/80 ring-1 ring-zinc-200/70 outline-none placeholder:text-zinc-400 focus:ring-2 focus:ring-sky-300"
+              className="h-12 rounded-md border-0 bg-background ring-1 ring-border outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-sky-300"
             />
           </div>
           <div className="space-y-2">
@@ -47,7 +47,7 @@ export function SettingsForm({ name, email }: { name: string; email: string }) {
               id="email"
               value={email}
               disabled
-              className="h-12 rounded-md border-0 bg-white/80 ring-1 ring-zinc-200/70 outline-none"
+              className="h-12 rounded-md border-0 bg-background ring-1 ring-border outline-none"
             />
           </div>
           {nameState.error ? (
@@ -63,7 +63,7 @@ export function SettingsForm({ name, email }: { name: string; email: string }) {
           <Button
             type="submit"
             disabled={namePending}
-            className="h-11 rounded-full bg-primary px-8 shadow-lg shadow-sky-300/60 hover:bg-sky-600"
+            className="h-11 rounded-full bg-primary px-8 hover:bg-sky-600"
           >
             {namePending ? 'Saving...' : 'Save name'}
           </Button>
@@ -71,10 +71,10 @@ export function SettingsForm({ name, email }: { name: string; email: string }) {
       </section>
 
       <section className="glass rounded-3xl p-6 sm:p-8">
-        <h2 className="font-display text-xl font-bold tracking-tight text-zinc-800">
+        <h2 className="font-display text-xl font-bold tracking-tight text-card-foreground">
           Reset password
         </h2>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm text-muted-foreground">
           Enter your current password to set a new one.
         </p>
         <form action={passwordAction} className="mt-6 space-y-4">
@@ -84,7 +84,7 @@ export function SettingsForm({ name, email }: { name: string; email: string }) {
               id="currentPassword"
               name="currentPassword"
               required
-              className="h-12 rounded-md border-0 bg-white/80 ring-1 ring-zinc-200/70 outline-none placeholder:text-zinc-400 focus:ring-2 focus:ring-sky-300"
+              className="h-12 rounded-md border-0 bg-background ring-1 ring-border outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-sky-300"
             />
           </div>
           <div className="space-y-2">
@@ -95,7 +95,7 @@ export function SettingsForm({ name, email }: { name: string; email: string }) {
               minLength={6}
               placeholder="At least 6 characters"
               required
-              className="h-12 rounded-md border-0 bg-white/80 ring-1 ring-zinc-200/70 outline-none placeholder:text-zinc-400 focus:ring-2 focus:ring-sky-300"
+              className="h-12 rounded-md border-0 bg-background ring-1 ring-border outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-sky-300"
             />
           </div>
           <div className="space-y-2">
@@ -105,7 +105,7 @@ export function SettingsForm({ name, email }: { name: string; email: string }) {
               name="confirmPassword"
               minLength={6}
               required
-              className="h-12 rounded-md border-0 bg-white/80 ring-1 ring-zinc-200/70 outline-none placeholder:text-zinc-400 focus:ring-2 focus:ring-sky-300"
+              className="h-12 rounded-md border-0 bg-background ring-1 ring-border outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-sky-300"
             />
           </div>
           {passwordState.error ? (
@@ -121,7 +121,7 @@ export function SettingsForm({ name, email }: { name: string; email: string }) {
           <Button
             type="submit"
             disabled={passwordPending}
-            className="h-11 rounded-full bg-primary px-8 shadow-lg shadow-sky-300/60 hover:bg-sky-600"
+            className="h-11 rounded-full bg-primary px-8 hover:bg-sky-600"
           >
             {passwordPending ? 'Resetting...' : 'Reset password'}
           </Button>

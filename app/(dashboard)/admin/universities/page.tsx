@@ -1,13 +1,7 @@
-import { redirect } from "next/navigation";
-import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { UniversityAdmin } from "@/components/admin/UniversityAdmin";
-import { AdminNav } from "@/components/admin/AdminNav";
 
 export default async function AdminUniversitiesPage() {
-  const session = await auth();
-  if (session?.user?.role !== "ADMIN") redirect("/dashboard");
-
   const [universities, majors, subjects, cities] = await Promise.all([
     prisma.university.findMany({
       include: {
@@ -22,17 +16,15 @@ export default async function AdminUniversitiesPage() {
   ]);
 
   return (
-    <div className="space-y-8">
+    <>
       <div className="mb-2">
-        <h1 className="text-gradient font-display text-4xl font-bold tracking-tight sm:text-5xl">
+        <h1 className="text-primary font-display text-4xl font-bold tracking-tight sm:text-5xl">
           Manage universities
         </h1>
-        <p className="mt-3 max-w-2xl text-base text-zinc-500">
+        <p className="mt-3 max-w-2xl text-base text-muted-foreground">
           Add or remove universities, their programs and subject requirements.
         </p>
       </div>
-
-      <AdminNav />
 
       <UniversityAdmin
         universities={universities.map((u) => ({
@@ -51,6 +43,6 @@ export default async function AdminUniversitiesPage() {
         subjects={subjects.map((s) => ({ id: s.id, name: s.name }))}
         cities={cities.map((c) => ({ id: c.id, name: c.name }))}
       />
-    </div>
+    </>
   );
 }

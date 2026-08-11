@@ -34,13 +34,13 @@ export default async function OnboardingPage() {
   return (
     <div className="mx-auto max-w-3xl">
       <div className="mb-10 text-center sm:text-left">
-        <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-sky-200/70 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-600">
+        <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
           Personalize your results
         </span>
-        <h1 className="text-gradient font-display text-4xl font-bold tracking-tight sm:text-5xl">
+        <h1 className="text-primary font-display text-4xl font-bold tracking-tight sm:text-5xl">
           Tell us about yourself
         </h1>
-        <p className="mt-3 max-w-xl text-base text-zinc-500 sm:text-lg">
+        <p className="mt-3 max-w-xl text-base text-muted-foreground sm:text-lg">
           We use these to match you with the universities that fit you best. You can update this
           anytime.
         </p>

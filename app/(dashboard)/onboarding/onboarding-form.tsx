@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition, useState } from "react";
-import { useForm, type Resolver } from "react-hook-form";
+import { useForm, useWatch, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -96,14 +96,14 @@ function HobbyIcon({ id, className }: { id: string; className?: string }) {
 }
 
 const pillInputClass =
-  "h-12 rounded-md bg-white/80 border-0 ring-1 ring-zinc-200/70 focus:ring-2 focus:ring-sky-300 outline-none placeholder:text-zinc-400";
+  "h-12 rounded-md bg-background/80 border-0 ring-1 ring-border focus:ring-2 focus:ring-sky-300 outline-none placeholder:text-muted-foreground";
 
 const pillChipClass = (active: boolean) =>
   cn(
     "rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200",
     active
-      ? "border-transparent bg-primary text-primary-foreground shadow-lg shadow-sky-300/50"
-      : "border-zinc-200/80 bg-white/70 text-zinc-600 hover:border-sky-200 hover:text-sky-600",
+      ? "border-transparent bg-primary text-primary-foreground"
+      : "border-border bg-background/70 text-muted-foreground hover:border-sky-200 hover:text-sky-600",
   );
 
 export function OnboardingForm({
@@ -119,8 +119,8 @@ export function OnboardingForm({
   const {
     register,
     handleSubmit,
-    watch,
     setValue,
+    control,
     formState: { errors },
   } = useForm<
     OnboardingFormValues,
@@ -135,11 +135,11 @@ export function OnboardingForm({
     defaultValues: initialValues,
   });
 
-  const selectedMajors = watch("preferredMajors");
-  const selectedHobbies = watch("hobbies");
-  const selectedCityId = watch("preferredCityId");
-  const lat = watch("latitude");
-  const lon = watch("longitude");
+  const selectedMajors = useWatch({ control, name: "preferredMajors" });
+  const selectedHobbies = useWatch({ control, name: "hobbies" });
+  const selectedCityId = useWatch({ control, name: "preferredCityId" });
+  const lat = useWatch({ control, name: "latitude" });
+  const lon = useWatch({ control, name: "longitude" });
 
   const toggleValue = (
     field: "preferredMajors" | "hobbies",
@@ -227,7 +227,7 @@ export function OnboardingForm({
               type="button"
               onClick={handleGetLocation}
               disabled={locating}
-              className="inline-flex items-center gap-2 rounded-md border border-zinc-200/80 bg-white/70 px-4 py-2 text-sm font-medium text-zinc-600 transition-all hover:border-sky-200 hover:text-sky-600 disabled:pointer-events-none disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-md border border-border bg-background/70 px-4 py-2 text-sm font-medium text-muted-foreground transition-all hover:border-sky-200 hover:text-sky-600 disabled:pointer-events-none disabled:opacity-60"
             >
               {locating ? (
                 <Loader2 className="size-4 animate-spin" />
@@ -237,13 +237,13 @@ export function OnboardingForm({
               {locating ? "Getting location…" : "Use my location"}
             </button>
             {lat !== null && lon !== null && (
-              <span className="inline-flex items-center gap-1.5 rounded-md bg-sky-50 px-3 py-2 text-xs font-medium text-sky-600">
+              <span className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-3 py-2 text-xs font-medium text-secondary-foreground">
                 <MapPin className="size-3" />
                 {lat.toFixed(4)}, {lon.toFixed(4)}
               </span>
             )}
           </div>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-muted-foreground">
             We use your coordinates to find universities closest to you.
           </p>
           <input type="hidden" {...register("latitude")} />
@@ -323,7 +323,7 @@ export function OnboardingForm({
       <button
         type="submit"
         disabled={isPending}
-        className="inline-flex w-full items-center justify-center rounded-full bg-primary px-12 py-4 text-base font-semibold text-primary-foreground shadow-lg shadow-sky-300/60 transition-all duration-300 hover:bg-sky-600 hover:shadow-xl hover:shadow-sky-300/70 disabled:pointer-events-none disabled:opacity-60"
+        className="inline-flex w-full items-center justify-center rounded-full bg-primary px-12 py-4 text-base font-semibold text-primary-foreground transition-all duration-300 hover:bg-sky-600 disabled:pointer-events-none disabled:opacity-60"
       >
         {isPending ? "Matching you up…" : "Get my recommendations"}
       </button>
@@ -341,14 +341,14 @@ function StepCard({
   return (
     <section className="glass rounded-3xl p-6 sm:p-8">
       <div className="mb-6 flex items-center gap-3">
-        <span className="flex size-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-sky-300/50">
+        <span className="flex size-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
           <Icon className="size-5" />
         </span>
         <div>
-          <h2 className="font-display text-lg font-bold tracking-tight text-zinc-800">
+          <h2 className="font-display text-lg font-bold tracking-tight text-foreground">
             {title}
           </h2>
-          <p className="text-sm text-zinc-500">{subtitle}</p>
+          <p className="text-sm text-muted-foreground">{subtitle}</p>
         </div>
       </div>
       {children}

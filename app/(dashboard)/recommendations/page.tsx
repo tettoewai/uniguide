@@ -32,13 +32,13 @@ export default async function RecommendationsPage() {
   return (
     <div className="space-y-8">
       <div className="mb-2">
-        <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-sky-200/70 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-600">
+        <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
           Ranked by your fit
         </span>
-        <h1 className="text-gradient font-display text-4xl font-bold tracking-tight sm:text-5xl">
+        <h1 className="text-primary font-display text-4xl font-bold tracking-tight sm:text-5xl">
           Your recommendations
         </h1>
-        <p className="mt-3 max-w-2xl text-base text-zinc-500">
+        <p className="mt-3 max-w-2xl text-base text-muted-foreground">
           Sorted by fit score across marks, budget, majors, interests and location.
         </p>
       </div>

@@ -28,7 +28,7 @@ import { cn } from '@/lib/utils'
 type Item = { id: string; name: string; color?: string | null }
 
 const inputClass =
-  'h-12 rounded-md border-0 bg-white/80 ring-1 ring-zinc-200/70 outline-none placeholder:text-zinc-400 focus:ring-2 focus:ring-sky-300'
+  'h-12 rounded-md border-0 bg-background/80 ring-1 ring-border outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-sky-300'
 
 export function CatalogAdmin({
   kind,
@@ -120,7 +120,7 @@ export function CatalogAdmin({
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-xs">
-          <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
+          <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -131,7 +131,7 @@ export function CatalogAdmin({
         </div>
         <Button
           onClick={openCreate}
-          className="h-12 rounded-full bg-primary px-8 shadow-lg shadow-sky-300/60 hover:bg-sky-600"
+          className="h-12 rounded-full bg-primary px-8 hover:bg-sky-600"
         >
           <Plus className="mr-1.5 size-4" />
           Add {kind.toLowerCase()}
@@ -142,8 +142,8 @@ export function CatalogAdmin({
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className="px-5 text-zinc-400">Name</TableHead>
-              {showColor ? <TableHead className="text-zinc-400">Color</TableHead> : null}
+              <TableHead className="px-5 text-muted-foreground">Name</TableHead>
+              {showColor ? <TableHead className="text-muted-foreground">Color</TableHead> : null}
               <TableHead className="w-28 px-5" />
             </TableRow>
           </TableHeader>
@@ -151,12 +151,12 @@ export function CatalogAdmin({
             {filtered.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={showColor ? 3 : 2} className="px-5 py-16 text-center">
-                  <p className="font-medium text-zinc-600">
+                  <p className="font-medium text-foreground">
                     {search
                       ? `No ${kind.toLowerCase()}s match your search.`
                       : `No ${kind.toLowerCase()}s yet.`}
                   </p>
-                  <p className="mt-1 text-sm text-zinc-400">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {search ? 'Try a different name.' : `Add your first ${kind.toLowerCase()}.`}
                   </p>
                 </TableCell>
@@ -164,13 +164,13 @@ export function CatalogAdmin({
             ) : (
               filtered.map((item) => (
                 <TableRow key={item.id} className="hover:bg-sky-50/40">
-                  <TableCell className="px-5 font-semibold text-zinc-800">{item.name}</TableCell>
+                  <TableCell className="px-5 font-semibold text-foreground">{item.name}</TableCell>
                   {showColor ? (
-                    <TableCell className="text-zinc-500">
+                    <TableCell className="text-muted-foreground">
                       {item.color ? (
                         <span className="inline-flex items-center gap-1.5 text-sm">
                           <span
-                            className="inline-block size-3.5 rounded-full ring-1 ring-zinc-200"
+                            className="inline-block size-3.5 rounded-full ring-1 ring-border"
                             style={{ backgroundColor: item.color }}
                           />
                           {item.color}
@@ -188,7 +188,7 @@ export function CatalogAdmin({
                           size="icon-sm"
                           onClick={() => setConfirmId(null)}
                           aria-label="Cancel delete"
-                          className="rounded-full text-zinc-400"
+                          className="rounded-full text-muted-foreground"
                         >
                           <X className="size-4" />
                         </Button>
@@ -215,7 +215,7 @@ export function CatalogAdmin({
                           onClick={() => openEdit(item)}
                           disabled={isPending}
                           aria-label={`Edit ${item.name}`}
-                          className="rounded-full text-zinc-400 hover:bg-sky-50 hover:text-sky-600"
+                          className="rounded-full text-muted-foreground hover:bg-sky-50 hover:text-sky-600"
                         >
                           <Pencil className="size-4" />
                         </Button>
@@ -225,7 +225,7 @@ export function CatalogAdmin({
                           onClick={() => setConfirmId(item.id)}
                           disabled={isPending}
                           aria-label={`Delete ${item.name}`}
-                          className="rounded-full text-zinc-400 hover:bg-rose-50 hover:text-rose-600"
+                          className="rounded-full text-muted-foreground hover:bg-rose-50 hover:text-rose-600"
                         >
                           <Trash2 className="size-4" />
                         </Button>
@@ -282,7 +282,7 @@ export function CatalogAdmin({
                       type="color"
                       value={color || '#0ea5e9'}
                       onChange={(e) => setColor(e.target.value)}
-                      className="size-12 shrink-0 cursor-pointer rounded-md border-0 p-1 ring-1 ring-zinc-200/70"
+                      className="size-12 shrink-0 cursor-pointer rounded-md border-0 p-1 ring-1 ring-border"
                     />
                     <Input
                       value={color}
@@ -304,14 +304,14 @@ export function CatalogAdmin({
                 type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
-                className="h-11 rounded-full border-white/50 bg-white/70 px-6"
+                className="h-11 rounded-full border-border bg-background/70 px-6"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={isPending}
-                className="h-11 rounded-full bg-primary px-6 shadow-lg shadow-sky-300/60 hover:bg-sky-600"
+                className="h-11 rounded-full bg-primary px-6 hover:bg-sky-600"
               >
                 {isPending ? (
                   <>

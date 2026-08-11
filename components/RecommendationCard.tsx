@@ -58,7 +58,7 @@ export function RecommendationCard({
   };
 
   return (
-    <div className="group relative overflow-hidden rounded-3xl border border-white/40 bg-white/60 p-6 shadow-card-soft backdrop-blur-md transition-all duration-300 hover:scale-[1.005] hover:shadow-md sm:p-7">
+    <div className="group relative overflow-hidden rounded-3xl border border-border bg-card/60 p-6 backdrop-blur-md transition-all duration-300 hover:scale-[1.005] sm:p-7">
       {/* <div
         aria-hidden
         className="pointer-events-none absolute -right-16 -top-16 size-40 rounded-full bg-sky-400/20 blur-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
@@ -67,18 +67,18 @@ export function RecommendationCard({
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 space-y-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-200/70 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-600">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
             #{rank} match
           </span>
           <Link
             href={`/universities/${result.id}`}
             className="block group/title"
           >
-            <h3 className="text-gradient font-display text-2xl font-bold leading-snug">
+            <h3 className="font-display text-2xl font-bold leading-snug">
               {result.name}
             </h3>
           </Link>
-          <p className="text-sm text-zinc-500">{result.cityName}</p>
+          <p className="text-sm text-muted-foreground">{result.cityName}</p>
         </div>
 
         <div className="flex flex-col items-center gap-2">
@@ -101,7 +101,7 @@ export function RecommendationCard({
             aria-label={
               isFavorite ? "Remove from favorites" : "Add to favorites"
             }
-            className="rounded-full bg-white/60 shadow-sm cursor-pointer"
+            className="rounded-full bg-card/60 cursor-pointer"
           >
             <Heart
               className={cn(
@@ -119,7 +119,7 @@ export function RecommendationCard({
           <Badge
             key={name}
             variant="secondary"
-            className="rounded-full border-white/40 bg-white/70 text-zinc-600"
+            className="rounded-full border-border bg-secondary text-secondary-foreground"
           >
             {name}
           </Badge>
@@ -129,12 +129,12 @@ export function RecommendationCard({
       {/* Overall match bar */}
       <div className="mt-6 space-y-1.5">
         <div className="flex items-center justify-between text-xs font-medium">
-          <span className="text-zinc-500">Overall fit</span>
+          <span className="text-muted-foreground">Overall fit</span>
           <span className={cn("tabular-nums", matchText(scorePct))}>
             {scorePct}%
           </span>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-zinc-200/70">
+        <div className="h-2 overflow-hidden rounded-full bg-muted">
           <div
             className={cn(
               "h-full rounded-full transition-all duration-500",
@@ -151,10 +151,10 @@ export function RecommendationCard({
           const pct = Math.round((result.breakdown[s.key] ?? 0) * 100);
           return (
             <div key={s.key} className="flex items-center gap-3">
-              <span className="w-24 shrink-0 text-xs font-medium text-zinc-500">
+              <span className="w-24 shrink-0 text-xs font-medium text-muted-foreground">
                 {s.label}
               </span>
-              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-zinc-200/70">
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
                 <div
                   className={cn(
                     "h-full rounded-full transition-all duration-500",
@@ -163,7 +163,7 @@ export function RecommendationCard({
                   style={{ width: `${Math.min(100, pct)}%` }}
                 />
               </div>
-              <span className="w-8 shrink-0 text-right text-xs tabular-nums text-zinc-400">
+              <span className="w-8 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
                 {pct}
               </span>
             </div>

@@ -42,14 +42,14 @@ type Row = {
 type Option = { id: string; name: string }
 
 const inputClass =
-  'h-12 rounded-md border-0 bg-white/80 ring-1 ring-zinc-200/70 outline-none placeholder:text-zinc-400 focus:ring-2 focus:ring-sky-300'
+  'h-12 rounded-md border-0 bg-background/80 ring-1 ring-border outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-sky-300'
 
 const chipClass = (active: boolean) =>
   cn(
     'rounded-full border px-4 py-1.5 text-sm font-medium transition-all duration-200',
     active
-      ? 'border-transparent bg-primary text-primary-foreground shadow-lg shadow-sky-300/50'
-      : 'border-zinc-200/80 bg-white/70 text-zinc-600 hover:border-sky-200 hover:text-sky-600',
+      ? 'border-transparent bg-primary text-primary-foreground'
+      : 'border-border bg-background/70 text-muted-foreground hover:border-sky-200 hover:text-sky-600',
   )
 
 export function UniversityAdmin({
@@ -152,7 +152,7 @@ export function UniversityAdmin({
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-xs">
-          <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-zinc-400" />
+          <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -163,7 +163,7 @@ export function UniversityAdmin({
         </div>
         <Button
           onClick={openCreate}
-          className="h-12 rounded-full bg-primary px-8 shadow-lg shadow-sky-300/60 hover:bg-sky-600"
+          className="h-12 rounded-full bg-primary px-8 hover:bg-sky-600"
         >
           <Plus className="mr-1.5 size-4" />
           Add university
@@ -174,12 +174,12 @@ export function UniversityAdmin({
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className="px-5 text-zinc-400">Name</TableHead>
-              <TableHead className="text-zinc-400">City</TableHead>
-              <TableHead className="text-zinc-400">Annual fee</TableHead>
-              <TableHead className="text-zinc-400">Min avg</TableHead>
-              <TableHead className="text-zinc-400">Majors</TableHead>
-              <TableHead className="text-zinc-400">Fav / Rev</TableHead>
+              <TableHead className="px-5 text-muted-foreground">Name</TableHead>
+              <TableHead className="text-muted-foreground">City</TableHead>
+              <TableHead className="text-muted-foreground">Annual fee</TableHead>
+              <TableHead className="text-muted-foreground">Min avg</TableHead>
+              <TableHead className="text-muted-foreground">Majors</TableHead>
+              <TableHead className="text-muted-foreground">Fav / Rev</TableHead>
               <TableHead className="w-28 px-5" />
             </TableRow>
           </TableHeader>
@@ -187,10 +187,10 @@ export function UniversityAdmin({
             {filtered.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="px-5 py-16 text-center">
-                  <p className="font-medium text-zinc-600">
+                  <p className="font-medium text-foreground">
                     {search ? 'No universities match your search.' : 'No universities yet.'}
                   </p>
-                  <p className="mt-1 text-sm text-zinc-400">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {search
                       ? 'Try a different name or city.'
                       : 'Add your first university to get started.'}
@@ -200,22 +200,22 @@ export function UniversityAdmin({
             ) : (
               filtered.map((u) => (
                 <TableRow key={u.id} className="hover:bg-sky-50/40">
-                  <TableCell className="px-5 font-semibold text-zinc-800">{u.name}</TableCell>
-                  <TableCell className="text-zinc-500">{cities.find(c => c.id === u.cityId)?.name ?? '—'}</TableCell>
-                  <TableCell className="tabular-nums text-zinc-600">
+                  <TableCell className="px-5 font-semibold text-foreground">{u.name}</TableCell>
+                  <TableCell className="text-muted-foreground">{cities.find(c => c.id === u.cityId)?.name ?? '—'}</TableCell>
+                  <TableCell className="tabular-nums text-foreground">
                     {u.annualFee ? `${u.annualFee.toLocaleString()} MMK` : '—'}
                   </TableCell>
-                  <TableCell className="tabular-nums text-zinc-600">
+                  <TableCell className="tabular-nums text-foreground">
                     {u.totalMarkRequired ? (
-                      <span className="inline-flex min-w-9 items-center justify-center rounded-full bg-sky-50 px-2.5 py-0.5 text-xs font-semibold text-sky-600">
+                      <span className="inline-flex min-w-9 items-center justify-center rounded-full bg-secondary px-2.5 py-0.5 text-xs font-semibold text-secondary-foreground">
                         {u.totalMarkRequired}
                       </span>
                     ) : (
                       '—'
                     )}
                   </TableCell>
-                  <TableCell className="max-w-56 truncate text-zinc-500">{u.majors || '—'}</TableCell>
-                  <TableCell className="text-zinc-500">
+                  <TableCell className="max-w-56 truncate text-muted-foreground">{u.majors || '—'}</TableCell>
+                  <TableCell className="text-muted-foreground">
                     {u.favorites} / {u.reviews}
                   </TableCell>
                   <TableCell className="px-5">
@@ -226,7 +226,7 @@ export function UniversityAdmin({
                           size="icon-sm"
                           onClick={() => setConfirmId(null)}
                           aria-label="Cancel delete"
-                          className="rounded-full text-zinc-400"
+                          className="rounded-full text-muted-foreground"
                         >
                           <X className="size-4" />
                         </Button>
@@ -253,7 +253,7 @@ export function UniversityAdmin({
                           onClick={() => openEdit(u)}
                           disabled={isPending}
                           aria-label={`Edit ${u.name}`}
-                          className="rounded-full text-zinc-400 hover:bg-sky-50 hover:text-sky-600"
+                          className="rounded-full text-muted-foreground hover:bg-sky-50 hover:text-sky-600"
                         >
                           <Pencil className="size-4" />
                         </Button>
@@ -263,7 +263,7 @@ export function UniversityAdmin({
                           onClick={() => setConfirmId(u.id)}
                           disabled={isPending}
                           aria-label={`Delete ${u.name}`}
-                          className="rounded-full text-zinc-400 hover:bg-rose-50 hover:text-rose-600"
+                          className="rounded-full text-muted-foreground hover:bg-rose-50 hover:text-rose-600"
                         >
                           <Trash2 className="size-4" />
                         </Button>
@@ -308,7 +308,7 @@ export function UniversityAdmin({
                   value={cityId}
                   onChange={(e) => setCityId(e.target.value)}
                   required
-                  className={cn(inputClass, 'appearance-none bg-[length:16px] bg-[right_12px_center] bg-no-repeat pr-10', !cityId && 'text-zinc-400')}
+                  className={cn(inputClass, 'appearance-none bg-[length:16px] bg-[right_12px_center] bg-no-repeat pr-10', !cityId && 'text-muted-foreground')}
                 >
                   <option value="" disabled>
                     Select a city
@@ -350,7 +350,7 @@ export function UniversityAdmin({
                   className={cn(inputClass, hasSubjectMarks && 'opacity-50')}
                 />
                 {hasSubjectMarks ? (
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-xs text-muted-foreground">
                     Clear subject marks to set an overall average.
                   </p>
                 ) : null}
@@ -383,7 +383,7 @@ export function UniversityAdmin({
             <div className="space-y-2">
               <Label>Subject minimum marks</Label>
               {hasAverage ? (
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-muted-foreground">
                   Subject marks are disabled because an overall average is set.
                 </p>
               ) : null}
@@ -391,16 +391,16 @@ export function UniversityAdmin({
                 {subjects.map((s) => (
                   <div
                     key={s.id}
-                    className="flex items-center gap-2 rounded-2xl bg-white/50 py-2 pl-4 pr-2 ring-1 ring-zinc-200/60"
+                    className="flex items-center gap-2 rounded-2xl bg-background/50 py-2 pl-4 pr-2 ring-1 ring-border"
                   >
-                    <span className="flex-1 text-sm text-zinc-600">{s.name}</span>
+                    <span className="flex-1 text-sm text-muted-foreground">{s.name}</span>
                     <Input
                       type="number"
                       min={0}
                       max={100}
                       placeholder="min"
                       disabled={hasAverage}
-                      className="h-9 w-16 rounded-md border-0 bg-white/80 text-center ring-1 ring-zinc-200/70 outline-none placeholder:text-zinc-400 focus:ring-2 focus:ring-sky-300"
+                      className="h-9 w-16 rounded-md border-0 bg-background/80 text-center ring-1 ring-border outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-sky-300"
                       name={`subjectReq-${s.id}`}
                       value={subjectReqs[s.id] ?? ''}
                       onChange={(e) => {
@@ -426,14 +426,14 @@ export function UniversityAdmin({
                 type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
-                className="h-11 rounded-full border-white/50 bg-white/70 px-6"
+                className="h-11 rounded-full border-border bg-background/70 px-6"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={isPending}
-                className="h-11 rounded-full bg-primary px-6 shadow-lg shadow-sky-300/60 hover:bg-sky-600"
+                className="h-11 rounded-full bg-primary px-6 hover:bg-sky-600"
               >
                 {isPending ? (
                   <>
