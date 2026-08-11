@@ -78,7 +78,7 @@ export function RecommendationCard({
               {result.name}
             </h3>
           </Link>
-          <p className="text-sm text-zinc-500">{result.city}</p>
+          <p className="text-sm text-zinc-500">{result.cityName}</p>
         </div>
 
         <div className="flex flex-col items-center gap-2">

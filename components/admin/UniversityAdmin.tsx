@@ -29,7 +29,7 @@ import { createUniversity, updateUniversity, deleteUniversity } from '@/app/acti
 type Row = {
   id: string
   name: string
-  city: string
+  cityId: string
   annualFee: number | null
   totalMarkRequired: number | null
   majors: string
@@ -56,10 +56,12 @@ export function UniversityAdmin({
   universities,
   majors,
   subjects,
+  cities,
 }: {
   universities: Row[]
   majors: Option[]
   subjects: Option[]
+  cities: Option[]
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -69,7 +71,7 @@ export function UniversityAdmin({
   const [confirmId, setConfirmId] = useState<string | null>(null)
 
   const [name, setName] = useState('')
-  const [city, setCity] = useState('')
+  const [cityId, setCityId] = useState('')
   const [annualFee, setAnnualFee] = useState('')
   const [totalMarkRequired, setTotalMarkRequired] = useState('')
   const [selectedMajors, setSelectedMajors] = useState<string[]>([])
@@ -81,7 +83,7 @@ export function UniversityAdmin({
 
   const resetForm = () => {
     setName('')
-    setCity('')
+    setCityId('')
     setAnnualFee('')
     setTotalMarkRequired('')
     setSelectedMajors([])
@@ -98,7 +100,7 @@ export function UniversityAdmin({
   const openEdit = (u: Row) => {
     setEditingId(u.id)
     setName(u.name)
-    setCity(u.city)
+    setCityId(u.cityId)
     setAnnualFee(u.annualFee === null ? '' : String(u.annualFee))
     setTotalMarkRequired(u.totalMarkRequired === null ? '' : String(u.totalMarkRequired))
     setSelectedMajors(u.majorIds)
@@ -113,9 +115,9 @@ export function UniversityAdmin({
     const q = search.trim().toLowerCase()
     if (!q) return universities
     return universities.filter(
-      (u) => u.name.toLowerCase().includes(q) || u.city.toLowerCase().includes(q),
+      (u) => u.name.toLowerCase().includes(q) || cities.find(c => c.id === u.cityId)?.name.toLowerCase().includes(q),
     )
-  }, [search, universities])
+  }, [search, universities, cities])
 
   const onDelete = (id: string, uniName: string) => {
     startTransition(async () => {
@@ -199,7 +201,7 @@ export function UniversityAdmin({
               filtered.map((u) => (
                 <TableRow key={u.id} className="hover:bg-sky-50/40">
                   <TableCell className="px-5 font-semibold text-zinc-800">{u.name}</TableCell>
-                  <TableCell className="text-zinc-500">{u.city}</TableCell>
+                  <TableCell className="text-zinc-500">{cities.find(c => c.id === u.cityId)?.name ?? '—'}</TableCell>
                   <TableCell className="tabular-nums text-zinc-600">
                     {u.annualFee ? `${u.annualFee.toLocaleString()} MMK` : '—'}
                   </TableCell>
@@ -300,14 +302,23 @@ export function UniversityAdmin({
               </div>
               <div className="space-y-2">
                 <Label htmlFor="city">City *</Label>
-                <Input
+                <select
                   id="city"
                   name="city"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
+                  value={cityId}
+                  onChange={(e) => setCityId(e.target.value)}
                   required
-                  className={inputClass}
-                />
+                  className={cn(inputClass, 'appearance-none bg-[length:16px] bg-[right_12px_center] bg-no-repeat pr-10', !cityId && 'text-zinc-400')}
+                >
+                  <option value="" disabled>
+                    Select a city
+                  </option>
+                  {cities.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">

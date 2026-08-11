@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useTransition, useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -17,6 +17,8 @@ import {
   Mic,
   Leaf,
   Sparkles,
+  MapPin,
+  Loader2,
   type LucideIcon,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -31,15 +33,11 @@ import {
 import { cn } from "@/lib/utils";
 import { updateUserPreferences } from "@/app/actions/user";
 
-const CITY_ITEMS: Record<string, string> = {
-  Yangon: "Yangon",
-  Mandalay: "Mandalay",
-  Naypyidaw: "Naypyidaw",
-};
-
 const formSchema = z.object({
   budget: z.coerce.number().min(0).nullable(),
-  preferredCity: z.string().nullable(),
+  preferredCityId: z.string().nullable(),
+  latitude: z.coerce.number().min(-90).max(90).nullable(),
+  longitude: z.coerce.number().min(-180).max(180).nullable(),
   preferredMajors: z.array(z.string()),
   marks: z.record(z.string(), z.coerce.number().min(0).max(100)),
   hobbies: z.array(z.string()),
@@ -56,6 +54,7 @@ type Props = {
     icon?: string | null;
     color?: string | null;
   }[];
+  cities: { id: string; name: string }[];
   initialValues: OnboardingFormValues;
 };
 
@@ -111,9 +110,11 @@ export function OnboardingForm({
   subjects,
   majors,
   hobbies,
+  cities,
   initialValues,
 }: Props) {
   const [isPending, startTransition] = useTransition();
+  const [locating, setLocating] = useState(false);
 
   const {
     register,
@@ -136,7 +137,9 @@ export function OnboardingForm({
 
   const selectedMajors = watch("preferredMajors");
   const selectedHobbies = watch("hobbies");
-  const selectedCity = watch("preferredCity");
+  const selectedCityId = watch("preferredCityId");
+  const lat = watch("latitude");
+  const lon = watch("longitude");
 
   const toggleValue = (
     field: "preferredMajors" | "hobbies",
@@ -152,6 +155,39 @@ export function OnboardingForm({
     );
   };
 
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser");
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setValue("latitude", position.coords.latitude, { shouldValidate: true });
+        setValue("longitude", position.coords.longitude, { shouldValidate: true });
+        setLocating(false);
+        toast.success("Location captured");
+      },
+      (error) => {
+        setLocating(false);
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            toast.error("Location permission denied. Please enter manually.");
+            break;
+          case error.POSITION_UNAVAILABLE:
+            toast.error("Location unavailable. Please enter manually.");
+            break;
+          case error.TIMEOUT:
+            toast.error("Location request timed out. Please try again.");
+            break;
+          default:
+            toast.error("Could not get location. Please enter manually.");
+        }
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
+    );
+  };
+
   const onSubmit = (values: OnboardingFormValues) => {
     startTransition(async () => {
       await updateUserPreferences(values);
@@ -161,7 +197,7 @@ export function OnboardingForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-<StepCard step={STEP_DEFS[0]}>
+      <StepCard step={STEP_DEFS[0]}>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="budget">Annual budget (MMK)</Label>
@@ -177,12 +213,41 @@ export function OnboardingForm({
           <div className="space-y-2">
             <Label>Preferred city</Label>
             <ControllerSelect
-              items={CITY_ITEMS}
-              current={selectedCity}
+              items={Object.fromEntries(cities.map((c) => [c.id, c.name]))}
+              current={selectedCityId}
               placeholder="Choose a city"
-              onPick={(v) => setValue("preferredCity", v, { shouldValidate: true })}
+              onPick={(v) => setValue("preferredCityId", v, { shouldValidate: true })}
             />
           </div>
+        </div>
+        <div className="mt-4 space-y-2">
+          <Label>Your location</Label>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={handleGetLocation}
+              disabled={locating}
+              className="inline-flex items-center gap-2 rounded-md border border-zinc-200/80 bg-white/70 px-4 py-2 text-sm font-medium text-zinc-600 transition-all hover:border-sky-200 hover:text-sky-600 disabled:pointer-events-none disabled:opacity-60"
+            >
+              {locating ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <MapPin className="size-4" />
+              )}
+              {locating ? "Getting location…" : "Use my location"}
+            </button>
+            {lat !== null && lon !== null && (
+              <span className="inline-flex items-center gap-1.5 rounded-md bg-sky-50 px-3 py-2 text-xs font-medium text-sky-600">
+                <MapPin className="size-3" />
+                {lat.toFixed(4)}, {lon.toFixed(4)}
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-zinc-400">
+            We use your coordinates to find universities closest to you.
+          </p>
+          <input type="hidden" {...register("latitude")} />
+          <input type="hidden" {...register("longitude")} />
         </div>
       </StepCard>
 

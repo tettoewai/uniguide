@@ -77,7 +77,9 @@ export async function changePassword(
 
 export type PreferencesInput = {
   budget: number | null
-  preferredCity: string | null
+  preferredCityId: string | null
+  latitude: number | null
+  longitude: number | null
   preferredMajors: string[]
   marks: Record<string, number>
   hobbies: string[]
@@ -92,7 +94,9 @@ export async function updateUserPreferences(input: PreferencesInput) {
   const parsed = z
     .object({
       budget: z.number().min(0).nullable(),
-      preferredCity: z.string().nullable(),
+      preferredCityId: z.string().nullable(),
+      latitude: z.number().min(-90).max(90).nullable(),
+      longitude: z.number().min(-180).max(180).nullable(),
       preferredMajors: z.array(z.string()),
       marks: z.record(z.string(), z.number().min(0).max(100)),
       hobbies: z.array(z.string()),
@@ -103,7 +107,9 @@ export async function updateUserPreferences(input: PreferencesInput) {
     where: { id: userId },
     data: {
       budget: parsed.budget,
-      preferredCity: parsed.preferredCity,
+      preferredCityId: parsed.preferredCityId,
+      latitude: parsed.latitude,
+      longitude: parsed.longitude,
       preferredMajors: parsed.preferredMajors,
     },
   })
@@ -129,9 +135,9 @@ export async function isOnboarded(userId: string) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
-      preferredCity: true,
+      preferredCityId: true,
       _count: { select: { marks: true, hobbies: true } },
     },
   })
-  return Boolean(user && (user.preferredCity || user._count.marks > 0 || user._count.hobbies > 0))
+  return Boolean(user && (user.preferredCityId || user._count.marks > 0 || user._count.hobbies > 0))
 }

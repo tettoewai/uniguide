@@ -2,11 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Building2, BookOpen, GraduationCap, Sparkles, MessageSquareText } from 'lucide-react'
+import { Building2, BookOpen, GraduationCap, Sparkles, MessageSquareText, MapPin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const items = [
   { href: '/admin/universities', label: 'Universities', icon: Building2 },
+  { href: '/admin/cities', label: 'Cities', icon: MapPin },
   { href: '/admin/subjects', label: 'Subjects', icon: BookOpen },
   { href: '/admin/majors', label: 'Majors', icon: GraduationCap },
   { href: '/admin/hobbies', label: 'Hobbies', icon: Sparkles },

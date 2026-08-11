@@ -48,12 +48,13 @@ export default async function UniversityDetailPage(
     prisma.university.findUnique({
       where: { id },
       include: {
+        city: true,
         subjectReqs: { include: { subject: true } },
         majors: { include: { major: true } },
         scholarships: true,
         reviews: {
           include: { user: { select: { name: true } } },
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: 'desc' },
         },
       },
     }),
@@ -90,7 +91,7 @@ export default async function UniversityDetailPage(
           <div className="mt-5 flex flex-wrap items-center gap-3">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 px-4 py-1.5 text-sm font-medium text-gray-700 shadow-sm backdrop-blur-sm">
               <MapPin className="size-4 text-sky-500" />
-              {university.city}
+              {university.city.name}
             </span>
           </div>
         </div>

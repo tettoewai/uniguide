@@ -11,22 +11,35 @@ enum Role {
   ADMIN
 }
 
-model User {
-  id            String   @id @default(cuid())
-  name          String
-  email         String   @unique
-  password      String
-  preferredCity String?
-  budget        Float?
-  preferredMajors String[] @default([])
-  role          Role     @default(STUDENT)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+model City {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  latitude    Float?
+  longitude   Float?
 
-  marks        UserSubjectMark[]
-  hobbies      UserHobby[]
-  reviews      Review[]
-  favorites    Favorite[]
+  users        User[]        @relation("PreferredCity")
+  universities University[]
+}
+
+model User {
+  id              String   @id @default(cuid())
+  name            String
+  email           String   @unique
+  password        String
+  preferredCityId String?
+  latitude        Float?
+  longitude       Float?
+  budget          Float?
+  preferredMajors String[] @default([])
+  role            Role     @default(STUDENT)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  preferredCity   City?            @relation("PreferredCity", fields: [preferredCityId], references: [id], onDelete: SetNull)
+  marks           UserSubjectMark[]
+  hobbies         UserHobby[]
+  reviews         Review[]
+  favorites       Favorite[]
   recommendations Recommendation[]
 }
 
@@ -53,7 +66,7 @@ model UserSubjectMark {
 model University {
   id                String   @id @default(cuid())
   name              String
-  city              String
+  cityId            String
   latitude          Float?
   longitude         Float?
   annualFee         Float?
@@ -61,6 +74,7 @@ model University {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
+  city             City                    @relation(fields: [cityId], references: [id], onDelete: Restrict)
   subjectReqs      UniversitySubjectRequirement[]
   majors           UniversityMajor[]
   scholarships     Scholarship[]

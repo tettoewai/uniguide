@@ -14,12 +14,13 @@ export default async function DashboardPage() {
     include: {
       marks: { include: { subject: true } },
       hobbies: { include: { hobby: true } },
+      preferredCity: true,
     },
   });
 
   const onboarded = Boolean(
     user &&
-    (user.preferredCity || user.marks.length > 0 || user.hobbies.length > 0),
+    (user.preferredCityId || user.marks.length > 0 || user.hobbies.length > 0),
   );
   if (!onboarded) redirect("/onboarding");
 
@@ -45,7 +46,7 @@ export default async function DashboardPage() {
         />
         <StatCard
           label="Preferred city"
-          value={user?.preferredCity ?? "Not set"}
+          value={user?.preferredCity?.name ?? "Not set"}
         />
         <StatCard label="Universities tracked" value={String(universities)} />
       </div>

@@ -4,6 +4,22 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import { auth } from '@/auth'
 
+const EARTH_RADIUS_KM = 6371
+const LOCATION_DECAY_KM = 500
+
+function haversineDistance(
+  lat1: number, lon1: number,
+  lat2: number, lon2: number,
+): number {
+  const toRad = (deg: number) => (deg * Math.PI) / 180
+  const dLat = toRad(lat2 - lat1)
+  const dLon = toRad(lon2 - lon1)
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2
+  return EARTH_RADIUS_KM * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+}
+
 export type ScoreBreakdown = {
   marks: number
   budget: number
@@ -15,7 +31,7 @@ export type ScoreBreakdown = {
 export type RecommendationResult = {
   id: string
   name: string
-  city: string
+  cityName: string
   latitude: number | null
   longitude: number | null
   totalMarkRequired: number | null
@@ -28,12 +44,13 @@ export type RecommendationResult = {
 export async function getWeightedRecommendations(userId: string) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    include: { marks: { include: { subject: true } }, hobbies: true },
+    include: { marks: { include: { subject: true } }, hobbies: true, preferredCity: true },
   })
   if (!user) return []
 
   const universities = await prisma.university.findMany({
     include: {
+      city: true,
       subjectReqs: { include: { subject: true } },
       majors: { include: { major: { include: { hobbyLinks: { include: { hobby: true } } } } } },
       scholarships: true,
@@ -96,12 +113,19 @@ export async function getWeightedRecommendations(userId: string) {
     const wInterest = interestScore * 0.15
 
     // 5. Location (10%)
-    const wLocation = user.preferredCity && uni.city === user.preferredCity ? 0.1 : 0
+    let locationScore = 0
+    if (user.latitude != null && user.longitude != null && uni.latitude != null && uni.longitude != null) {
+      const dist = haversineDistance(user.latitude, user.longitude, uni.latitude, uni.longitude)
+      locationScore = Math.max(0, 1 - dist / LOCATION_DECAY_KM)
+    } else if (user.preferredCityId && uni.cityId === user.preferredCityId) {
+      locationScore = 1
+    }
+    const wLocation = locationScore * 0.1
 
     return {
       id: uni.id,
       name: uni.name,
-      city: uni.city,
+      cityName: uni.city.name,
       latitude: uni.latitude,
       longitude: uni.longitude,
       totalMarkRequired: uni.totalMarkRequired,
@@ -113,7 +137,7 @@ export async function getWeightedRecommendations(userId: string) {
         budget: budgetFactor,
         major: majorScore,
         interest: interestScore,
-        location: wLocation / 0.1,
+        location: locationScore,
       },
     }
   })

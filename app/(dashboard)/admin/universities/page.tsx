@@ -8,7 +8,7 @@ export default async function AdminUniversitiesPage() {
   const session = await auth();
   if (session?.user?.role !== "ADMIN") redirect("/dashboard");
 
-  const [universities, majors, subjects] = await Promise.all([
+  const [universities, majors, subjects, cities] = await Promise.all([
     prisma.university.findMany({
       include: {
         majors: { include: { major: true } },
@@ -16,8 +16,9 @@ export default async function AdminUniversitiesPage() {
         _count: { select: { favorites: true, reviews: true } },
       },
     }),
-    prisma.major.findMany({ orderBy: { name: "asc" } }),
-    prisma.subject.findMany({ orderBy: { name: "asc" } }),
+    prisma.major.findMany({ orderBy: { name: 'asc' } }),
+    prisma.subject.findMany({ orderBy: { name: 'asc' } }),
+    prisma.city.findMany({ orderBy: { name: 'asc' } }),
   ]);
 
   return (
@@ -37,10 +38,10 @@ export default async function AdminUniversitiesPage() {
         universities={universities.map((u) => ({
           id: u.id,
           name: u.name,
-          city: u.city,
+          cityId: u.cityId,
           annualFee: u.annualFee,
           totalMarkRequired: u.totalMarkRequired,
-          majors: u.majors.map((m) => m.major.name).join(", "),
+          majors: u.majors.map((m) => m.major.name).join(', '),
           majorIds: u.majors.map((m) => m.majorId),
           subjectReqs: Object.fromEntries(u.subjectReqs.map((r) => [r.subjectId, r.minMark])),
           favorites: u._count.favorites,
@@ -48,6 +49,7 @@ export default async function AdminUniversitiesPage() {
         }))}
         majors={majors.map((m) => ({ id: m.id, name: m.name }))}
         subjects={subjects.map((s) => ({ id: s.id, name: s.name }))}
+        cities={cities.map((c) => ({ id: c.id, name: c.name }))}
       />
     </div>
   );

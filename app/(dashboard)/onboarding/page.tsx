@@ -12,15 +12,18 @@ export default async function OnboardingPage() {
     include: { marks: true, hobbies: true },
   })
 
-  const [subjects, majors, hobbies] = await Promise.all([
+  const [subjects, majors, hobbies, cities] = await Promise.all([
     prisma.subject.findMany({ orderBy: { name: 'asc' } }),
     prisma.major.findMany({ orderBy: { name: 'asc' } }),
     prisma.hobby.findMany({ orderBy: { name: 'asc' } }),
+    prisma.city.findMany({ orderBy: { name: 'asc' } }),
   ])
 
   const initialValues = {
     budget: user?.budget ?? null,
-    preferredCity: user?.preferredCity ?? null,
+    preferredCityId: user?.preferredCityId ?? null,
+    latitude: user?.latitude ?? null,
+    longitude: user?.longitude ?? null,
     preferredMajors: user?.preferredMajors ?? [],
     marks: Object.fromEntries(
       user?.marks.map((m) => [m.subjectId, m.mark]) ?? [],
@@ -46,6 +49,7 @@ export default async function OnboardingPage() {
         subjects={subjects}
         majors={majors}
         hobbies={hobbies}
+        cities={cities.map((c) => ({ id: c.id, name: c.name }))}
         initialValues={initialValues}
       />
     </div>

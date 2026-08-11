@@ -9,16 +9,43 @@ const adapter = new PrismaPg({
 
 const prisma = new PrismaClient({ adapter })
 
-async function upsertMany<T extends { id: string; name: string }>(
-  upsertFn: (id: string, name: string) => Promise<T>,
-  names: { id: string; name: string }[],
-) {
-  for (const n of names) {
-    await upsertFn(n.id, n.name)
-  }
-}
-
 async function main() {
+  const cities = [
+    { id: 'city-naypyidaw', name: 'Naypyidaw', latitude: 19.7633, longitude: 96.0785 },
+    { id: 'city-yangon', name: 'Yangon', latitude: 16.8661, longitude: 96.1951 },
+    { id: 'city-mandalay', name: 'Mandalay', latitude: 21.9588, longitude: 96.0891 },
+    { id: 'city-bago', name: 'Bago', latitude: 17.3369, longitude: 96.4797 },
+    { id: 'city-mawlamyine', name: 'Mawlamyine', latitude: 16.4905, longitude: 97.6259 },
+    { id: 'city-sittwe', name: 'Sittwe', latitude: 20.1525, longitude: 92.8954 },
+    { id: 'city-taunggyi', name: 'Taunggyi', latitude: 20.7836, longitude: 97.0372 },
+    { id: 'city-monywa', name: 'Monywa', latitude: 22.1172, longitude: 95.1364 },
+    { id: 'city-meiktila', name: 'Meiktila', latitude: 20.8775, longitude: 95.8583 },
+    { id: 'city-myitkyina', name: 'Myitkyina', latitude: 25.3842, longitude: 97.3917 },
+    { id: 'city-dawei', name: 'Dawei', latitude: 14.0976, longitude: 98.1944 },
+    { id: 'city-hpa-an', name: 'Hpa-an', latitude: 16.8907, longitude: 97.6345 },
+    { id: 'city-pathein', name: 'Pathein', latitude: 16.7794, longitude: 94.7321 },
+    { id: 'city-pyay', name: 'Pyay', latitude: 18.8206, longitude: 95.2167 },
+    { id: 'city-lashio', name: 'Lashio', latitude: 22.9369, longitude: 97.7489 },
+    { id: 'city-magway', name: 'Magway', latitude: 20.1871, longitude: 94.9303 },
+    { id: 'city-sagaing', name: 'Sagaing', latitude: 21.8787, longitude: 95.9614 },
+    { id: 'city-loikaw', name: 'Loikaw', latitude: 19.6783, longitude: 97.2117 },
+    { id: 'city-hakha', name: 'Hakha', latitude: 22.6394, longitude: 93.5264 },
+    { id: 'city-nyaungshwe', name: 'Nyaungshwe', latitude: 20.5594, longitude: 96.9314 },
+    { id: 'city-kalay', name: 'Kalay', latitude: 23.2150, longitude: 94.3264 },
+    { id: 'city-pakokku', name: 'Pakokku', latitude: 21.3353, longitude: 95.0914 },
+    { id: 'city-myingyan', name: 'Myingyan', latitude: 21.6561, longitude: 95.3914 },
+    { id: 'city-shwebo', name: 'Shwebo', latitude: 22.5694, longitude: 95.6964 },
+    { id: 'city-putao', name: 'Putao', latitude: 27.3231, longitude: 97.3936 },
+    { id: 'city-thandwe', name: 'Thandwe', latitude: 18.4644, longitude: 94.3614 },
+  ]
+  for (const c of cities) {
+    await prisma.city.upsert({
+      where: { id: c.id },
+      update: { name: c.name, latitude: c.latitude, longitude: c.longitude },
+      create: { id: c.id, name: c.name, latitude: c.latitude, longitude: c.longitude },
+    })
+  }
+
   const subjects = [
     { id: 'sub-myanmar', name: 'Myanmar' },
     { id: 'sub-english', name: 'English' },
@@ -28,11 +55,13 @@ async function main() {
     { id: 'sub-bio', name: 'Biology' },
     { id: 'sub-econ', name: 'Economics' },
   ]
-  await upsertMany(
-    async (id, name) =>
-      prisma.subject.upsert({ where: { id }, update: { name }, create: { id, name } }),
-    subjects,
-  )
+  for (const s of subjects) {
+    await prisma.subject.upsert({
+      where: { id: s.id },
+      update: { name: s.name },
+      create: { id: s.id, name: s.name },
+    })
+  }
 
   const hobbies = [
     { id: 'hobby-coding', name: 'Coding', icon: null, color: '#0ea5e9' },
@@ -42,17 +71,13 @@ async function main() {
     { id: 'hobby-speaking', name: 'Public Speaking', icon: null, color: '#10b981' },
     { id: 'hobby-enviro', name: 'Environmental Science', icon: null, color: '#22c55e' },
   ]
-  await upsertMany(
-    async (id, name) => {
-      const meta = hobbies.find((h) => h.id === id)!
-      return prisma.hobby.upsert({
-        where: { id },
-        update: { name, icon: meta.icon, color: meta.color },
-        create: { id, name, icon: meta.icon, color: meta.color },
-      })
-    },
-    hobbies,
-  )
+  for (const h of hobbies) {
+    await prisma.hobby.upsert({
+      where: { id: h.id },
+      update: { name: h.name, icon: h.icon, color: h.color },
+      create: { id: h.id, name: h.name, icon: h.icon, color: h.color },
+    })
+  }
 
   const majors = [
     { id: 'major-cs', name: 'Computer Science (CS)' },
@@ -61,11 +86,13 @@ async function main() {
     { id: 'major-econ', name: 'Economics' },
     { id: 'major-law', name: 'Law' },
   ]
-  await upsertMany(
-    async (id, name) =>
-      prisma.major.upsert({ where: { id }, update: { name }, create: { id, name } }),
-    majors,
-  )
+  for (const m of majors) {
+    await prisma.major.upsert({
+      where: { id: m.id },
+      update: { name: m.name },
+      create: { id: m.id, name: m.name },
+    })
+  }
 
   const majorHobbies: Record<string, string[]> = {
     'major-cs': ['hobby-coding', 'hobby-robotics'],
@@ -89,7 +116,7 @@ async function main() {
     {
       id: 'uni-ytu',
       name: 'Yangon Technological University (YTU)',
-      city: 'Yangon',
+      cityId: 'city-yangon',
       latitude: 16.8422,
       longitude: 96.1483,
       annualFee: 900_000,
@@ -100,7 +127,7 @@ async function main() {
     {
       id: 'uni-uit',
       name: 'University of Information Technology (UIT)',
-      city: 'Yangon',
+      cityId: 'city-yangon',
       latitude: 16.8984,
       longitude: 96.1842,
       annualFee: 1_100_000,
@@ -111,7 +138,7 @@ async function main() {
     {
       id: 'uni-ucsy',
       name: 'University of Computer Studies, Yangon (UCSY)',
-      city: 'Yangon',
+      cityId: 'city-yangon',
       latitude: 16.866,
       longitude: 96.12,
       annualFee: 700_000,
@@ -122,7 +149,7 @@ async function main() {
     {
       id: 'uni-med1',
       name: 'University of Medicine (1), Yangon',
-      city: 'Yangon',
+      cityId: 'city-yangon',
       latitude: 16.7862,
       longitude: 96.1438,
       annualFee: 2_000_000,
@@ -133,7 +160,7 @@ async function main() {
     {
       id: 'uni-dagon',
       name: 'Dagon University',
-      city: 'Yangon',
+      cityId: 'city-yangon',
       latitude: 16.9109,
       longitude: 96.1883,
       annualFee: 400_000,
@@ -144,7 +171,7 @@ async function main() {
     {
       id: 'uni-ygn',
       name: 'University of Yangon',
-      city: 'Yangon',
+      cityId: 'city-yangon',
       latitude: 16.8231,
       longitude: 96.134,
       annualFee: 350_000,
@@ -155,7 +182,7 @@ async function main() {
     {
       id: 'uni-yadanabon',
       name: 'Yadanabon University',
-      city: 'Mandalay',
+      cityId: 'city-mandalay',
       latitude: 21.924,
       longitude: 96.0961,
       annualFee: 300_000,
@@ -170,7 +197,7 @@ async function main() {
       where: { id: u.id },
       update: {
         name: u.name,
-        city: u.city,
+        cityId: u.cityId,
         latitude: u.latitude,
         longitude: u.longitude,
         annualFee: u.annualFee,
@@ -179,7 +206,7 @@ async function main() {
       create: {
         id: u.id,
         name: u.name,
-        city: u.city,
+        cityId: u.cityId,
         latitude: u.latitude,
         longitude: u.longitude,
         annualFee: u.annualFee,

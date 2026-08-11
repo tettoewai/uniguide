@@ -10,7 +10,7 @@ export default async function FavoritesPage() {
   const favorites = await prisma.favorite.findMany({
     where: { userId: session.user.id },
     include: {
-      university: { include: { majors: { include: { major: true } } } },
+      university: { include: { city: true, majors: { include: { major: true } } } },
     },
     orderBy: { university: { name: 'asc' } },
   })
@@ -43,7 +43,7 @@ export default async function FavoritesPage() {
               key={f.universityId}
               universityId={f.university.id}
               name={f.university.name}
-              city={f.university.city}
+              city={f.university.city.name}
               majors={f.university.majors.map((m) => m.major.name)}
             />
           ))}

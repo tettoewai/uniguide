@@ -69,7 +69,7 @@ export async function createUniversity(
   await prisma.university.create({
     data: {
       name: result.data.name,
-      city: result.data.city,
+      cityId: result.data.city,
       annualFee: result.data.annualFee,
       totalMarkRequired: result.data.totalMarkRequired,
       majors: {
@@ -102,7 +102,7 @@ export async function updateUniversity(
       where: { id },
       data: {
         name: result.data.name,
-        city: result.data.city,
+        cityId: result.data.city,
         annualFee: result.data.annualFee,
         totalMarkRequired: result.data.totalMarkRequired,
       },
@@ -324,5 +324,83 @@ export async function deleteReview(id: string): Promise<{ error?: string }> {
     return {}
   } catch {
     return { error: 'Could not delete this review.' }
+  }
+}
+
+export async function createCity(
+  _prevState: AdminFormState,
+  formData: FormData,
+): Promise<AdminFormState> {
+  await requireAdmin()
+
+  const parsed = z
+    .object({
+      name: z.string().min(1, 'Name is required').max(100),
+      latitude: z.coerce.number().min(-90).max(90).nullable(),
+      longitude: z.coerce.number().min(-180).max(180).nullable(),
+    })
+    .safeParse({
+      name: formData.get('name'),
+      latitude: formData.get('latitude') === '' ? null : formData.get('latitude'),
+      longitude: formData.get('longitude') === '' ? null : formData.get('longitude'),
+    })
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Invalid input' }
+
+  try {
+    await prisma.city.create({
+      data: {
+        name: parsed.data.name.trim(),
+        latitude: parsed.data.latitude,
+        longitude: parsed.data.longitude,
+      },
+    })
+    return { error: undefined }
+  } catch {
+    return { error: 'A city with this name already exists.' }
+  }
+}
+
+export async function updateCity(
+  id: string,
+  _prevState: AdminFormState,
+  formData: FormData,
+): Promise<AdminFormState> {
+  await requireAdmin()
+
+  const parsed = z
+    .object({
+      name: z.string().min(1, 'Name is required').max(100),
+      latitude: z.coerce.number().min(-90).max(90).nullable(),
+      longitude: z.coerce.number().min(-180).max(180).nullable(),
+    })
+    .safeParse({
+      name: formData.get('name'),
+      latitude: formData.get('latitude') === '' ? null : formData.get('latitude'),
+      longitude: formData.get('longitude') === '' ? null : formData.get('longitude'),
+    })
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Invalid input' }
+
+  try {
+    await prisma.city.update({
+      where: { id },
+      data: {
+        name: parsed.data.name.trim(),
+        latitude: parsed.data.latitude,
+        longitude: parsed.data.longitude,
+      },
+    })
+    return { error: undefined }
+  } catch {
+    return { error: 'A city with this name already exists.' }
+  }
+}
+
+export async function deleteCity(id: string): Promise<{ error?: string }> {
+  await requireAdmin()
+  try {
+    await prisma.city.delete({ where: { id } })
+    return {}
+  } catch {
+    return { error: 'This city is linked to users or universities and cannot be deleted.' }
   }
 }
