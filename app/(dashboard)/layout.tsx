@@ -48,9 +48,11 @@ export default async function DashboardLayout({
           <DesktopNav isAdmin={isAdmin} />
 
           <div className="flex items-center gap-2">
-            <LocaleSwitcher />
-            <ThemeToggle />
-            <LogoutButton />
+            <div className="hidden items-center gap-2 md:flex">
+              <LocaleSwitcher />
+              <ThemeToggle />
+              <LogoutButton />
+            </div>
             <div className="flex size-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
               {initials}
             </div>

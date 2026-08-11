@@ -37,9 +37,9 @@ export const myDictionary = {
   },
   nav: {
     primary: "ပင်မ",
-    home: "ပင်မစာမျက်နှာ",
+    home: "ပင်မ",
     matches: "ကိုက်ညီမှုများ",
-    saved: "သိမ်းဆည်းထားသည်များ",
+    saved: "သိမ်းဆည်း",
     dashboard: "ဒက်ရှ်ဘုတ်",
     recommendations: "အကြံပြုချက်များ",
     favorites: "စိတ်ကြိုက်များ",

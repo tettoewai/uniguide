@@ -19,6 +19,8 @@ import {
 import { cn } from '@/lib/utils'
 import { logoutUser } from '@/app/actions/auth'
 import { useLocale } from '@/components/providers/locale-provider'
+import { LocaleSwitcher } from '@/components/LocaleSwitcher'
+import { ThemeToggle } from '@/components/ThemeToggle'
 import {
   Sheet,
   SheetTrigger,
@@ -85,7 +87,11 @@ export function MobileHamburger({ isAdmin }: { isAdmin: boolean }) {
             )
           })}
         </nav>
-        <div className="border-t p-4">
+        <div className="flex flex-col gap-4 border-t p-4">
+          <div className="flex items-center justify-between">
+            <LocaleSwitcher />
+            <ThemeToggle />
+          </div>
           <form action={logoutUser}>
             <button
               type="submit"
