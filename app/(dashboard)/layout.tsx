@@ -62,7 +62,7 @@ export default async function DashboardLayout({
 
       <MobileNav isAdmin={isAdmin} />
 
-      <main className="relative z-10 mx-auto w-full max-w-7xl flex-1 px-4 pb-28 md:pt-10 sm:px-8 md:pb-16 md:pt-14">
+      <main className="relative z-10 mx-auto w-full max-w-7xl flex-1 px-4 pb-28 pt-10 sm:px-8 md:pb-16 md:pt-14">
         {children}
       </main>
     </div>
