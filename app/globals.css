@@ -167,6 +167,10 @@
     @apply font-sans scroll-smooth;
   }
 
+  html[data-locale="my"] {
+    font-size: 14px;
+  }
+
   body {
     @apply bg-background text-foreground;
     -webkit-font-smoothing: antialiased;
@@ -217,8 +221,6 @@
   @apply border border-border bg-card backdrop-blur-2xl;
 }
 
-
-
 /* ---- Leaflet custom markers ---- */
 .uniguide-marker-wrap {
   background: transparent;
@@ -237,8 +239,7 @@
   inset: 0;
   border-radius: 9999px;
   background: #0ea5e9;
-  box-shadow:
-    0 0 0 4px rgb(255 255 255 / 0.95);
+  box-shadow: 0 0 0 4px rgb(255 255 255 / 0.95);
 }
 
 .uniguide-marker .marker-ping {
