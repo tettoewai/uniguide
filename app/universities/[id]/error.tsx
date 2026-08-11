@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useLocale } from "@/components/providers/locale-provider";
 import { AlertCircle } from "lucide-react";
 
 export default function UniversityError({
@@ -10,6 +11,8 @@ export default function UniversityError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { dict } = useLocale();
+
   return (
     <div className="flex min-h-[60vh] items-center justify-center px-4">
       <div className="glass relative w-full max-w-md overflow-hidden rounded-3xl border border-border bg-card/60 p-8 text-center backdrop-blur-xl">
@@ -22,14 +25,14 @@ export default function UniversityError({
             <AlertCircle className="h-7 w-7" />
           </div>
 <h1 className="font-display text-2xl font-bold tracking-tight text-foreground">
-            Couldn&apos;t load this university
+            {dict.errorPages.couldNotLoad}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
           <Button
             onClick={reset}
             className="mt-6 rounded-full bg-primary px-8 py-2.5 font-medium text-white transition-all hover:scale-[1.02]"
           >
-            Try again
+            {dict.common.tryAgain}
           </Button>
         </div>
       </div>

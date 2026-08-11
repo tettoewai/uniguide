@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { auth } from '@/auth'
+import { getDictionary } from '@/lib/i18n/server'
 
 export type AccountFormState = { error?: string; success?: string }
 
@@ -14,13 +15,16 @@ export async function updateProfileName(
 ): Promise<AccountFormState> {
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
+  const dict = await getDictionary()
 
   const parsed = z
-    .object({ name: z.string().min(1, 'Name is required').max(80, 'Name is too long') })
+    .object({
+      name: z.string().min(1, dict.actions.nameRequired).max(80, dict.actions.nameTooLong),
+    })
     .safeParse({ name: formData.get('name') })
 
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? 'Invalid name' }
+    return { error: parsed.error.issues[0]?.message ?? dict.actions.invalidName }
   }
 
   await prisma.user.update({
@@ -28,7 +32,7 @@ export async function updateProfileName(
     data: { name: parsed.data.name },
   })
 
-  return { success: 'Name updated' }
+  return { success: dict.actions.nameUpdated }
 }
 
 export async function changePassword(
@@ -37,12 +41,13 @@ export async function changePassword(
 ): Promise<AccountFormState> {
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
+  const dict = await getDictionary()
 
   const parsed = z
     .object({
-      currentPassword: z.string().min(1, 'Current password is required'),
-      newPassword: z.string().min(6, 'New password must be at least 6 characters'),
-      confirmPassword: z.string().min(1, 'Please confirm your new password'),
+      currentPassword: z.string().min(1, dict.actions.currentPasswordRequired),
+      newPassword: z.string().min(6, dict.actions.newPasswordTooShort),
+      confirmPassword: z.string().min(1, dict.actions.confirmRequired),
     })
     .safeParse({
       currentPassword: formData.get('currentPassword') ?? '',
@@ -51,11 +56,11 @@ export async function changePassword(
     })
 
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? 'Invalid form data' }
+    return { error: parsed.error.issues[0]?.message ?? dict.actions.invalidFormData }
   }
 
   if (parsed.data.newPassword !== parsed.data.confirmPassword) {
-    return { error: 'New passwords do not match' }
+    return { error: dict.actions.newPasswordsMismatch }
   }
 
   const user = await prisma.user.findUnique({ where: { id: session.user.id } })
@@ -63,7 +68,7 @@ export async function changePassword(
 
   const isValid = await bcrypt.compare(parsed.data.currentPassword, user.password)
   if (!isValid) {
-    return { error: 'Current password is incorrect' }
+    return { error: dict.actions.currentPasswordIncorrect }
   }
 
   const passwordHash = await bcrypt.hash(parsed.data.newPassword, 10)
@@ -72,7 +77,7 @@ export async function changePassword(
     data: { password: passwordHash },
   })
 
-  return { success: 'Password updated' }
+  return { success: dict.actions.passwordUpdated }
 }
 
 export type PreferencesInput = {

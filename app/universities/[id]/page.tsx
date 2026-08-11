@@ -4,6 +4,8 @@ import { ReviewForm } from "@/components/ReviewForm";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/db";
+import { getDictionary } from "@/lib/i18n/server";
+import { format } from "@/lib/i18n/config";
 import {
   ArrowLeft,
   Award,
@@ -43,6 +45,7 @@ export default async function UniversityDetailPage(
   props: PageProps<"/universities/[id]">,
 ) {
   const { id } = await props.params;
+  const dict = await getDictionary();
 
   const [university, session] = await Promise.all([
     prisma.university.findUnique({
@@ -81,7 +84,7 @@ export default async function UniversityDetailPage(
             className="inline-flex items-center gap-1.5 rounded-full bg-background px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-sm transition hover:bg-background"
           >
             <ArrowLeft className="size-4" />
-            Back to recommendations
+            {dict.university.back}
           </Link>
 
           <h1 className="mt-6 font-display text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
@@ -105,7 +108,7 @@ export default async function UniversityDetailPage(
           <Card className="overflow-hidden border-0 bg-card/80 backdrop-blur-sm transition">
             <CardHeader className="border-b border-border bg-muted/50 pb-3">
               <CardTitle className="font-display text-xl font-bold tracking-tight text-card-foreground">
-                Programs & Requirements
+                {dict.university.programsTitle}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 pt-4">
@@ -126,8 +129,8 @@ export default async function UniversityDetailPage(
                   <table className="w-full text-sm">
                     <thead className="bg-muted/70">
                       <tr className="text-left text-muted-foreground">
-                        <th className="px-4 py-2 font-medium">Subject</th>
-                        <th className="px-4 py-2 font-medium">Min. Mark</th>
+                        <th className="px-4 py-2 font-medium">{dict.university.subject}</th>
+                        <th className="px-4 py-2 font-medium">{dict.university.minMark}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -151,7 +154,7 @@ export default async function UniversityDetailPage(
                 </div>
               ) : university.totalMarkRequired ? (
                 <p className="text-sm text-muted-foreground">
-                  Overall average required:{" "}
+                  {dict.university.overallAverage}{" "}
                   <span className="font-semibold text-sky-600">
                     {university.totalMarkRequired}
                   </span>
@@ -166,7 +169,7 @@ export default async function UniversityDetailPage(
               <CardHeader className="border-b border-border bg-muted/50 pb-3">
                 <CardTitle className="flex items-center gap-2 font-display text-xl font-bold tracking-tight text-card-foreground">
                   <Landmark className="size-5 text-emerald-500" />
-                  Scholarships
+                  {dict.university.scholarships}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 pt-4">
@@ -182,7 +185,7 @@ export default async function UniversityDetailPage(
                       {s.name}
                     </span>
                     <span className="rounded-full bg-amber-50 px-3 py-0.5 text-xs font-semibold text-amber-700">
-                      {s.type ?? "General"}
+                      {s.type ?? dict.university.general}
                       {s.amount ? ` · ${s.amount.toLocaleString()} MMK` : ""}
                     </span>
                   </div>
@@ -195,13 +198,13 @@ export default async function UniversityDetailPage(
             <Card className="overflow-hidden border-0 bg-card/80 backdrop-blur-sm transition">
               <CardHeader className="border-b border-border bg-muted/50 pb-3">
                 <CardTitle className="font-display text-xl font-bold tracking-tight text-card-foreground">
-                Reviews
+                {dict.university.reviewsTitle}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 pt-4">
               {university.reviews.length === 0 ? (
                 <p className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
-                  No reviews yet. Be the first!
+                  {dict.university.noReviews}
                 </p>
               ) : (
                 university.reviews.map((review) => (
@@ -215,7 +218,9 @@ export default async function UniversityDetailPage(
                       </span>
                       <span
                         className="text-sm tracking-tight text-amber-400"
-                        aria-label={`Rating: ${review.rating} out of 5`}
+                        aria-label={format(dict.university.ratingAria, {
+                          rating: review.rating,
+                        })}
                       >
                         {"★".repeat(review.rating)}
                         <span className="text-muted-foreground">
@@ -275,9 +280,9 @@ export default async function UniversityDetailPage(
               href="/login"
               className="inline-flex items-center rounded-full bg-sky-600 px-5 py-2 font-medium text-white transition hover:bg-sky-700"
             >
-              Sign in
+              {dict.university.signIn}
             </Link>{" "}
-            to save this university or leave a review.
+            {dict.university.savePrompt}
           </p>
         </div>
       )}

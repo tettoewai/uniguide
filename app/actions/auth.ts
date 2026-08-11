@@ -6,18 +6,28 @@ import { z } from 'zod'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import { signIn } from '@/auth'
+import { getDictionary } from '@/lib/i18n/server'
 
-const registerSchema = z
-  .object({
-    name: z.string().min(1, 'Name is required'),
-    email: z.string().email('Invalid email address'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
-    confirmPassword: z.string().min(6, 'Password must be at least 6 characters'),
+function registerSchema(dict: Awaited<ReturnType<typeof getDictionary>>) {
+  return z
+    .object({
+      name: z.string().min(1, dict.actions.nameRequired),
+      email: z.string().email(dict.actions.invalidEmail),
+      password: z.string().min(6, dict.actions.passwordTooShort),
+      confirmPassword: z.string().min(6, dict.actions.passwordTooShort),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: dict.actions.passwordsMismatch,
+      path: ['confirmPassword'],
+    })
+}
+
+function loginSchema(dict: Awaited<ReturnType<typeof getDictionary>>) {
+  return z.object({
+    email: z.string().email(dict.actions.invalidEmail),
+    password: z.string().min(1, dict.actions.passwordRequired),
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  })
+}
 
 export type AuthFormState = { error?: string }
 
@@ -25,7 +35,8 @@ export async function registerUser(
   _prevState: AuthFormState,
   formData: FormData,
 ): Promise<AuthFormState> {
-  const parsed = registerSchema.safeParse({
+  const dict = await getDictionary()
+  const parsed = registerSchema(dict).safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
     password: formData.get('password'),
@@ -33,12 +44,12 @@ export async function registerUser(
   })
 
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? 'Invalid form data' }
+    return { error: parsed.error.issues[0]?.message ?? dict.actions.invalidFormData }
   }
 
   const existing = await prisma.user.findUnique({ where: { email: parsed.data.email } })
   if (existing) {
-    return { error: 'An account with this email already exists' }
+    return { error: dict.actions.emailExists }
   }
 
   const passwordHash = await bcrypt.hash(parsed.data.password, 10)
@@ -58,27 +69,26 @@ export async function registerUser(
     })
   } catch (error) {
     if (error instanceof AuthError) {
-      return { error: 'Something went wrong signing you in' }
+      return { error: dict.actions.signInError }
     }
     throw error
   }
 
-  return { error: 'Something went wrong signing you in' }
+  return { error: dict.actions.signInError }
 }
 
 export async function loginUser(
   _prevState: AuthFormState,
   formData: FormData,
 ): Promise<AuthFormState> {
-  const parsed = registerSchema
-    .pick({ email: true, password: true })
-    .safeParse({
+  const dict = await getDictionary()
+  const parsed = loginSchema(dict).safeParse({
       email: formData.get('email'),
       password: formData.get('password'),
     })
 
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? 'Invalid form data' }
+    return { error: parsed.error.issues[0]?.message ?? dict.actions.invalidFormData }
   }
 
   const rawCallbackUrl = formData.get('callbackUrl')
@@ -99,15 +109,15 @@ export async function loginUser(
     if (error instanceof AuthError) {
       switch (error.type) {
         case 'CredentialsSignin':
-          return { error: 'Invalid email or password' }
+          return { error: dict.actions.invalidCredentials }
         default:
-          return { error: 'Something went wrong. Please try again.' }
+          return { error: dict.actions.genericError }
       }
     }
     throw error
   }
 
-  return { error: 'Something went wrong. Please try again.' }
+  return { error: dict.actions.genericError }
 }
 
 export async function logoutUser() {

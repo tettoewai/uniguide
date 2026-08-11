@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Inter, Outfit, Geist_Mono } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
 import { ThemeProvider } from '@/components/providers/theme-provider'
+import { LocaleProvider } from '@/components/providers/locale-provider'
+import { getServerContext } from '@/lib/i18n/server'
 import './globals.css'
 
 const inter = Inter({
@@ -19,15 +21,20 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
-export const metadata: Metadata = {
-  title: 'UniGuide',
-  description: 'University recommendation system for Myanmar students',
+export async function generateMetadata(): Promise<Metadata> {
+  const { dict } = await getServerContext()
+  return {
+    title: 'UniGuide',
+    description: dict.meta.description,
+  }
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { locale, dict } = await getServerContext()
+
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`${inter.variable} ${outfit.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
@@ -38,8 +45,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster />
+          <LocaleProvider locale={locale} dict={dict}>
+            {children}
+            <Toaster />
+          </LocaleProvider>
         </ThemeProvider>
       </body>
     </html>

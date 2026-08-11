@@ -12,23 +12,25 @@ import {
   Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const items = [
-  { href: "/admin/universities", label: "Universities", icon: Building2 },
-  { href: "/admin/cities", label: "Cities", icon: MapPin },
-  { href: "/admin/subjects", label: "Subjects", icon: BookOpen },
-  { href: "/admin/majors", label: "Majors", icon: GraduationCap },
-  { href: "/admin/hobbies", label: "Hobbies", icon: Sparkles },
-  { href: "/admin/reviews", label: "Reviews", icon: MessageSquareText },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
-];
+import { useLocale } from "@/components/providers/locale-provider";
 
 export function AdminNav() {
   const pathname = usePathname();
+  const { dict } = useLocale();
+
+  const items = [
+    { href: "/admin/universities", label: dict.admin.kindsPlural.university, icon: Building2 },
+    { href: "/admin/cities", label: dict.admin.kindsPlural.city, icon: MapPin },
+    { href: "/admin/subjects", label: dict.admin.kindsPlural.subject, icon: BookOpen },
+    { href: "/admin/majors", label: dict.admin.kindsPlural.major, icon: GraduationCap },
+    { href: "/admin/hobbies", label: dict.admin.kindsPlural.hobby, icon: Sparkles },
+    { href: "/admin/reviews", label: dict.admin.kindsPlural.review, icon: MessageSquareText },
+    { href: "/admin/settings", label: dict.nav.settings, icon: Settings },
+  ];
 
   return (
     <nav
-      aria-label="Admin sections"
+      aria-label={dict.admin.navAria}
       className="flex flex-wrap items-center justify-center"
     >
       <div className="gap-1.5 rounded-full border border-border bg-card/60 p-1.5 backdrop-blur-md w-fit hidden md:flex">

@@ -1,7 +1,9 @@
 import { LoginForm } from "./login-form";
+import { getDictionary } from "@/lib/i18n/server";
 
 export default async function LoginPage(props: PageProps<"/login">) {
   const searchParams = await props.searchParams;
+  const dict = await getDictionary();
   const callbackUrl =
     typeof searchParams?.callbackUrl === "string"
       ? searchParams.callbackUrl
@@ -10,7 +12,7 @@ export default async function LoginPage(props: PageProps<"/login">) {
   return (
     <div className="space-y-8">
       <p className="text-center text-sm text-muted-foreground">
-        Find the right university for your marks, budget and interests.
+        {dict.auth.login.blurb}
       </p>
       <LoginForm callbackUrl={callbackUrl} />
     </div>

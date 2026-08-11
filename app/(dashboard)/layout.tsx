@@ -5,6 +5,7 @@ import { MobileHamburger } from "@/components/MobileHamburger";
 import { DesktopNav } from "@/components/DesktopNav";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LogoutButton } from "@/components/LogoutButton";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 
 export default async function DashboardLayout({
   children,
@@ -47,6 +48,7 @@ export default async function DashboardLayout({
           <DesktopNav isAdmin={isAdmin} />
 
           <div className="flex items-center gap-2">
+            <LocaleSwitcher />
             <ThemeToggle />
             <LogoutButton />
             <div className="flex size-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">

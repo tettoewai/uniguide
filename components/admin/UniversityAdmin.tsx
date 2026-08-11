@@ -25,6 +25,8 @@ import {
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import { createUniversity, updateUniversity, deleteUniversity } from '@/app/actions/admin'
+import { useLocale } from '@/components/providers/locale-provider'
+import { format } from '@/lib/i18n/config'
 
 type Row = {
   id: string
@@ -64,6 +66,8 @@ export function UniversityAdmin({
   cities: Option[]
 }) {
   const router = useRouter()
+  const { dict } = useLocale()
+  const s = dict.admin.universities
   const [isPending, startTransition] = useTransition()
   const [open, setOpen] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
@@ -125,7 +129,7 @@ export function UniversityAdmin({
       if (res.error) {
         toast.error(res.error)
       } else {
-        toast.success(`"${uniName}" deleted`)
+        toast.success(format(s.deleted, { name: uniName }))
         setConfirmId(null)
         router.refresh()
       }
@@ -142,7 +146,7 @@ export function UniversityAdmin({
       } else {
         setOpen(false)
         resetForm()
-        toast.success(editingId ? 'University updated' : 'University created')
+        toast.success(editingId ? s.updated : s.created)
         router.refresh()
       }
     })
@@ -156,9 +160,9 @@ export function UniversityAdmin({
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search name or city..."
+            placeholder={s.searchPlaceholder}
             className={cn(inputClass, 'pl-11')}
-            aria-label="Search universities"
+            aria-label={s.searchAria}
           />
         </div>
         <Button
@@ -166,7 +170,7 @@ export function UniversityAdmin({
           className="h-12 rounded-full bg-primary px-8 hover:bg-sky-600"
         >
           <Plus className="mr-1.5 size-4" />
-          Add university
+          {s.add}
         </Button>
       </div>
 
@@ -174,12 +178,12 @@ export function UniversityAdmin({
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className="px-5 text-muted-foreground">Name</TableHead>
-              <TableHead className="text-muted-foreground">City</TableHead>
-              <TableHead className="text-muted-foreground">Annual fee</TableHead>
-              <TableHead className="text-muted-foreground">Min avg</TableHead>
-              <TableHead className="text-muted-foreground">Majors</TableHead>
-              <TableHead className="text-muted-foreground">Fav / Rev</TableHead>
+              <TableHead className="px-5 text-muted-foreground">{s.nameCol}</TableHead>
+              <TableHead className="text-muted-foreground">{s.cityCol}</TableHead>
+              <TableHead className="text-muted-foreground">{s.annualFeeCol}</TableHead>
+              <TableHead className="text-muted-foreground">{s.minAvgCol}</TableHead>
+              <TableHead className="text-muted-foreground">{s.majorsCol}</TableHead>
+              <TableHead className="text-muted-foreground">{s.favRevCol}</TableHead>
               <TableHead className="w-28 px-5" />
             </TableRow>
           </TableHeader>
@@ -188,12 +192,12 @@ export function UniversityAdmin({
               <TableRow>
                 <TableCell colSpan={7} className="px-5 py-16 text-center">
                   <p className="font-medium text-foreground">
-                    {search ? 'No universities match your search.' : 'No universities yet.'}
+                    {search ? s.noResultsSearchTitle : s.noResultsTitle}
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
                     {search
-                      ? 'Try a different name or city.'
-                      : 'Add your first university to get started.'}
+                      ? s.noResultsSearchBody
+                      : s.noResultsBody}
                   </p>
                 </TableCell>
               </TableRow>
@@ -225,7 +229,7 @@ export function UniversityAdmin({
                           variant="ghost"
                           size="icon-sm"
                           onClick={() => setConfirmId(null)}
-                          aria-label="Cancel delete"
+                          aria-label={dict.admin.catalog.cancelDeleteAria}
                           className="rounded-full text-muted-foreground"
                         >
                           <X className="size-4" />
@@ -235,7 +239,7 @@ export function UniversityAdmin({
                           size="icon-sm"
                           onClick={() => onDelete(u.id, u.name)}
                           disabled={isPending}
-                          aria-label={`Confirm delete ${u.name}`}
+                          aria-label={format(dict.admin.catalog.confirmDeleteAria, { name: u.name })}
                           className="rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100"
                         >
                           {isPending ? (
@@ -252,7 +256,7 @@ export function UniversityAdmin({
                           size="icon-sm"
                           onClick={() => openEdit(u)}
                           disabled={isPending}
-                          aria-label={`Edit ${u.name}`}
+                          aria-label={format(dict.admin.catalog.editAria, { name: u.name })}
                           className="rounded-full text-muted-foreground hover:bg-sky-50 hover:text-sky-600"
                         >
                           <Pencil className="size-4" />
@@ -262,7 +266,7 @@ export function UniversityAdmin({
                           size="icon-sm"
                           onClick={() => setConfirmId(u.id)}
                           disabled={isPending}
-                          aria-label={`Delete ${u.name}`}
+                          aria-label={format(dict.admin.catalog.deleteAria, { name: u.name })}
                           className="rounded-full text-muted-foreground hover:bg-rose-50 hover:text-rose-600"
                         >
                           <Trash2 className="size-4" />
@@ -281,16 +285,16 @@ export function UniversityAdmin({
         <DialogContent className="max-h-[85vh] overflow-y-auto rounded-3xl sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle className="font-display text-xl font-bold tracking-tight">
-              {editingId ? 'Edit university' : 'Add a university'}
+              {editingId ? s.editTitle : s.addTitle}
             </DialogTitle>
             <DialogDescription>
-              Fill in the details. Majors and subject requirements are optional.
+              {s.fillHint}
             </DialogDescription>
           </DialogHeader>
           <form action={onCreate} className="space-y-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="name">Name *</Label>
+                <Label htmlFor="name">{dict.admin.catalog.nameRequired}</Label>
                 <Input
                   id="name"
                   name="name"
@@ -301,7 +305,7 @@ export function UniversityAdmin({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="city">City *</Label>
+                <Label htmlFor="city">{s.city} *</Label>
                 <select
                   id="city"
                   name="city"
@@ -311,7 +315,7 @@ export function UniversityAdmin({
                   className={cn(inputClass, 'appearance-none bg-[length:16px] bg-[right_12px_center] bg-no-repeat pr-10', !cityId && 'text-muted-foreground')}
                 >
                   <option value="" disabled>
-                    Select a city
+                    {s.selectCity}
                   </option>
                   {cities.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -323,7 +327,7 @@ export function UniversityAdmin({
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="annualFee">Annual fee (MMK)</Label>
+                <Label htmlFor="annualFee">{s.annualFee}</Label>
                 <Input
                   id="annualFee"
                   name="annualFee"
@@ -335,7 +339,7 @@ export function UniversityAdmin({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="totalMarkRequired">Overall average required</Label>
+                <Label htmlFor="totalMarkRequired">{s.overallAverage}</Label>
                 <Input
                   id="totalMarkRequired"
                   name="totalMarkRequired"
@@ -351,14 +355,14 @@ export function UniversityAdmin({
                 />
                 {hasSubjectMarks ? (
                   <p className="text-xs text-muted-foreground">
-                    Clear subject marks to set an overall average.
+                    {s.clearSubjectHint}
                   </p>
                 ) : null}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Majors</Label>
+              <Label>{s.majors}</Label>
               <div className="flex flex-wrap gap-2">
                 {majors.map((m) => {
                   const active = selectedMajors.includes(m.id)
@@ -381,30 +385,30 @@ export function UniversityAdmin({
             </div>
 
             <div className="space-y-2">
-              <Label>Subject minimum marks</Label>
+              <Label>{s.subjectMinMarks}</Label>
               {hasAverage ? (
                 <p className="text-xs text-muted-foreground">
-                  Subject marks are disabled because an overall average is set.
+                  {s.disabledByAverage}
                 </p>
               ) : null}
               <div className={cn('grid gap-2 sm:grid-cols-2', hasAverage && 'opacity-50')}>
-                {subjects.map((s) => (
+                {subjects.map((subj) => (
                   <div
-                    key={s.id}
+                    key={subj.id}
                     className="flex items-center gap-2 rounded-2xl bg-background/50 py-2 pl-4 pr-2 ring-1 ring-border"
                   >
-                    <span className="flex-1 text-sm text-muted-foreground">{s.name}</span>
+                    <span className="flex-1 text-sm text-muted-foreground">{subj.name}</span>
                     <Input
                       type="number"
                       min={0}
                       max={100}
-                      placeholder="min"
+                      placeholder={s.min}
                       disabled={hasAverage}
                       className="h-9 w-16 rounded-md border-0 bg-background/80 text-center ring-1 ring-border outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-sky-300"
-                      name={`subjectReq-${s.id}`}
-                      value={subjectReqs[s.id] ?? ''}
+                      name={`subjectReq-${subj.id}`}
+                      value={subjectReqs[subj.id] ?? ''}
                       onChange={(e) => {
-                        setSubjectReqs((prev) => ({ ...prev, [s.id]: e.target.value }))
+                        setSubjectReqs((prev) => ({ ...prev, [subj.id]: e.target.value }))
                         if (e.target.value !== '') setTotalMarkRequired('')
                       }}
                     />
@@ -428,7 +432,7 @@ export function UniversityAdmin({
                 onClick={() => setOpen(false)}
                 className="h-11 rounded-full border-border bg-background/70 px-6"
               >
-                Cancel
+                {dict.common.cancel}
               </Button>
               <Button
                 type="submit"
@@ -438,10 +442,10 @@ export function UniversityAdmin({
                 {isPending ? (
                   <>
                     <Loader2 className="mr-1.5 size-4 animate-spin" />
-                    {editingId ? 'Saving...' : 'Creating...'}
+                    {editingId ? dict.common.saving : dict.common.creating}
                   </>
                 ) : (
-                  editingId ? 'Save changes' : 'Create university'
+                  editingId ? dict.common.saveChanges : s.createTitle
                 )}
               </Button>
             </DialogFooter>

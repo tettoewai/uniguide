@@ -4,24 +4,26 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Sparkles, Heart, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useLocale } from '@/components/providers/locale-provider'
 
 type Item = { href: string; label: string; icon: typeof Home }
 
-const userNavItems: Item[] = [
-  { href: '/dashboard', label: 'Home', icon: Home },
-  { href: '/recommendations', label: 'Matches', icon: Sparkles },
-  { href: '/favorites', label: 'Saved', icon: Heart },
-  { href: '/settings', label: 'Settings', icon: Settings },
-]
-
 export function MobileNav({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname()
+  const { dict } = useLocale()
+
+  const userNavItems: Item[] = [
+    { href: '/dashboard', label: dict.nav.home, icon: Home },
+    { href: '/recommendations', label: dict.nav.matches, icon: Sparkles },
+    { href: '/favorites', label: dict.nav.saved, icon: Heart },
+    { href: '/settings', label: dict.nav.settings, icon: Settings },
+  ]
 
   if (isAdmin) return null
 
   return (
     <nav
-      aria-label="Primary"
+      aria-label={dict.nav.primary}
       className="fixed inset-x-4 bottom-4 z-50 md:hidden"
     >
       <div className="mx-auto flex max-w-md items-center justify-between gap-1 rounded-full border border-border bg-background/75 p-2 backdrop-blur-xl">

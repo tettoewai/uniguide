@@ -13,6 +13,7 @@ import {
   Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/components/providers/locale-provider";
 import {
   Sheet,
   SheetTrigger,
@@ -20,29 +21,30 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 
-const items = [
-  { href: "/admin/universities", label: "Universities", icon: Building2 },
-  { href: "/admin/cities", label: "Cities", icon: MapPin },
-  { href: "/admin/subjects", label: "Subjects", icon: BookOpen },
-  { href: "/admin/majors", label: "Majors", icon: GraduationCap },
-  { href: "/admin/hobbies", label: "Hobbies", icon: Sparkles },
-  { href: "/admin/reviews", label: "Reviews", icon: MessageSquareText },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
-];
-
 export function AdminMobileNav() {
   const pathname = usePathname();
+  const { dict } = useLocale();
+
+  const items = [
+    { href: "/admin/universities", label: dict.admin.kindsPlural.university, icon: Building2 },
+    { href: "/admin/cities", label: dict.admin.kindsPlural.city, icon: MapPin },
+    { href: "/admin/subjects", label: dict.admin.kindsPlural.subject, icon: BookOpen },
+    { href: "/admin/majors", label: dict.admin.kindsPlural.major, icon: GraduationCap },
+    { href: "/admin/hobbies", label: dict.admin.kindsPlural.hobby, icon: Sparkles },
+    { href: "/admin/reviews", label: dict.admin.kindsPlural.review, icon: MessageSquareText },
+    { href: "/admin/settings", label: dict.nav.settings, icon: Settings },
+  ];
 
   return (
     <Sheet>
       <SheetTrigger
-        aria-label="Open menu"
+        aria-label={dict.nav.openMenu}
         className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground md:hidden"
       >
         <Menu className="size-5" />
       </SheetTrigger>
       <SheetContent side="left" showCloseButton={false} className="w-64 p-0">
-        <SheetTitle className="sr-only">Navigation</SheetTitle>
+        <SheetTitle className="sr-only">{dict.nav.navigation}</SheetTitle>
         <nav className="flex flex-col gap-1 p-4">
           {items.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;

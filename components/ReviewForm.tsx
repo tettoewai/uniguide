@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { addReview, type ReviewFormState } from '@/app/actions/review'
+import { useLocale } from '@/components/providers/locale-provider'
+import { format } from '@/lib/i18n/config'
 
 type Review = {
   rating: number
@@ -22,6 +24,7 @@ export function ReviewForm({
   isLoggedIn: boolean
   existingReview: Review | null
 }) {
+  const { dict } = useLocale()
   const action = addReview.bind(null, universityId)
   const [state, formAction, isPending] = useActionState<ReviewFormState, FormData>(action, {
     error: undefined,
@@ -35,9 +38,9 @@ export function ReviewForm({
       <Card className="glass rounded-3xl">
         <CardHeader>
           <CardTitle className="font-display text-lg font-bold tracking-tight">
-            Rate this university
+            {dict.reviewForm.rateTitle}
           </CardTitle>
-          <CardDescription>Sign in to leave a review.</CardDescription>
+          <CardDescription>{dict.reviewForm.signInToReview}</CardDescription>
         </CardHeader>
       </Card>
     )
@@ -47,21 +50,21 @@ export function ReviewForm({
     <Card className="glass rounded-3xl">
       <CardHeader>
         <CardTitle className="font-display text-lg font-bold tracking-tight">
-          {existingReview ? 'Update your review' : 'Rate this university'}
+          {existingReview ? dict.reviewForm.updateTitle : dict.reviewForm.rateTitle}
         </CardTitle>
-        <CardDescription>How was the student experience here?</CardDescription>
+        <CardDescription>{dict.reviewForm.description}</CardDescription>
       </CardHeader>
       <CardContent>
         <form
           action={(fd) => {
             formAction(fd)
-            toast.success('Review saved')
+            toast.success(dict.reviewForm.saved)
           }}
           className="space-y-4"
         >
           <input type="hidden" name="rating" value={rating} />
           <div>
-            <Label>Your rating</Label>
+            <Label>{dict.reviewForm.yourRating}</Label>
             <div className="mt-2 flex gap-1">
               {[1, 2, 3, 4, 5].map((value) => (
                 <button
@@ -71,7 +74,10 @@ export function ReviewForm({
                   onMouseEnter={() => setHover(value)}
                   onMouseLeave={() => setHover(rating)}
                   className="text-2xl leading-none transition-all duration-150 hover:scale-110"
-                  aria-label={`${value} star${value > 1 ? 's' : ''}`}
+                  aria-label={format(
+                    value > 1 ? dict.reviewForm.starAriaPlural : dict.reviewForm.starAria,
+                    { value },
+                  )}
                 >
                   <span className={value <= (hover || rating) ? 'text-amber-500' : 'text-muted-foreground'}>
                     ★
@@ -81,12 +87,12 @@ export function ReviewForm({
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="comment">Comment (optional)</Label>
+            <Label htmlFor="comment">{dict.reviewForm.commentLabel}</Label>
             <Textarea
               id="comment"
               name="comment"
               rows={3}
-              placeholder="Campus life, teachers, facilities..."
+              placeholder={dict.reviewForm.commentPlaceholder}
               defaultValue={existingReview?.comment ?? ''}
               className="rounded-md border-0 bg-background/80 ring-1 ring-border outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-sky-300"
             />
@@ -98,7 +104,11 @@ export function ReviewForm({
             className="w-full rounded-full bg-primary hover:bg-sky-600"
             disabled={isPending || rating === 0}
           >
-            {isPending ? 'Saving...' : existingReview ? 'Update review' : 'Submit review'}
+            {isPending
+              ? dict.reviewForm.saving
+              : existingReview
+                ? dict.reviewForm.update
+                : dict.reviewForm.submit}
           </Button>
         </form>
       </CardContent>

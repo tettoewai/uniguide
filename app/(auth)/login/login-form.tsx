@@ -14,8 +14,10 @@ import {
 } from "@/components/ui/card";
 import { loginUser, type AuthFormState } from "@/app/actions/auth";
 import { PasswordInput } from "@/components/ui/password-input";
+import { useLocale } from "@/components/providers/locale-provider";
 
 export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
+  const { dict } = useLocale();
   const [state, formAction, isPending] = useActionState<
     AuthFormState,
     FormData
@@ -27,10 +29,10 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
     <Card className="glass rounded-3xl p-4">
       <CardHeader className="text-center">
         <CardTitle className="font-display text-3xl font-bold tracking-tight">
-          Welcome back
+          {dict.auth.login.title}
         </CardTitle>
         <CardDescription>
-          Sign in to UniGuide to see your university matches.
+          {dict.auth.login.description}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -41,23 +43,23 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
             value={callbackUrl ?? "/dashboard"}
           />
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{dict.auth.login.email}</Label>
             <Input
               id="email"
               name="email"
               type="email"
-              placeholder="you@example.com"
+              placeholder={dict.auth.login.emailPlaceholder}
               required
               className="h-12 rounded-md border-0 bg-background/80 ring-1 ring-border outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-sky-300"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{dict.auth.login.password}</Label>
             <PasswordInput
               id="password"
               name="password"
               required
-              placeholder="Enter your password"
+              placeholder={dict.auth.login.passwordPlaceholder}
               className="h-12 rounded-md border-0 bg-background/80 ring-1 ring-border outline-none focus:ring-2 focus:ring-sky-300"
             />
           </div>
@@ -71,16 +73,16 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
             className="h-12 w-full rounded-full bg-primary hover:bg-sky-600"
             disabled={isPending}
           >
-            {isPending ? "Signing in..." : "Sign in"}
+            {isPending ? dict.auth.login.submitting : dict.auth.login.submit}
           </Button>
         </form>
         <p className="mt-4 text-center text-sm text-muted-foreground">
-          No account yet?{" "}
+          {dict.auth.login.noAccount}{" "}
           <Link
             href="/register"
             className="font-medium text-sky-600 underline underline-offset-4"
           >
-            Create one
+            {dict.auth.login.createOne}
           </Link>
         </p>
       </CardContent>

@@ -10,10 +10,12 @@ import {
   updateProfileName,
   type AccountFormState,
 } from '@/app/actions/user'
+import { useLocale } from '@/components/providers/locale-provider'
 
 const initialState: AccountFormState = {}
 
 export function SettingsForm({ name, email }: { name: string; email: string }) {
+  const { dict } = useLocale()
   const [nameState, nameAction, namePending] = useActionState<
     AccountFormState,
     FormData
@@ -27,12 +29,12 @@ export function SettingsForm({ name, email }: { name: string; email: string }) {
     <div className="grid gap-4 lg:grid-cols-2">
       <section className="glass rounded-3xl p-6 sm:p-8">
         <h2 className="font-display text-xl font-bold tracking-tight text-card-foreground">
-          Profile
+          {dict.settings.profile}
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">Your full name shown across UniGuide.</p>
+        <p className="mt-1 text-sm text-muted-foreground">{dict.settings.profileHint}</p>
         <form action={nameAction} className="mt-6 space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">{dict.settings.name}</Label>
             <Input
               id="name"
               name="name"
@@ -42,7 +44,7 @@ export function SettingsForm({ name, email }: { name: string; email: string }) {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{dict.settings.email}</Label>
             <Input
               id="email"
               value={email}
@@ -65,21 +67,21 @@ export function SettingsForm({ name, email }: { name: string; email: string }) {
             disabled={namePending}
             className="h-11 rounded-full bg-primary px-8 hover:bg-sky-600"
           >
-            {namePending ? 'Saving...' : 'Save name'}
+            {namePending ? dict.settings.savingName : dict.settings.saveName}
           </Button>
         </form>
       </section>
 
       <section className="glass rounded-3xl p-6 sm:p-8">
         <h2 className="font-display text-xl font-bold tracking-tight text-card-foreground">
-          Reset password
+          {dict.settings.resetPassword}
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Enter your current password to set a new one.
+          {dict.settings.resetPasswordHint}
         </p>
         <form action={passwordAction} className="mt-6 space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="currentPassword">Current password</Label>
+            <Label htmlFor="currentPassword">{dict.settings.currentPassword}</Label>
             <PasswordInput
               id="currentPassword"
               name="currentPassword"
@@ -88,18 +90,18 @@ export function SettingsForm({ name, email }: { name: string; email: string }) {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="newPassword">New password</Label>
+            <Label htmlFor="newPassword">{dict.settings.newPassword}</Label>
             <PasswordInput
               id="newPassword"
               name="newPassword"
               minLength={6}
-              placeholder="At least 6 characters"
+              placeholder={dict.settings.newPasswordHint}
               required
               className="h-12 rounded-md border-0 bg-background ring-1 ring-border outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-sky-300"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm new password</Label>
+            <Label htmlFor="confirmPassword">{dict.settings.confirmNewPassword}</Label>
             <PasswordInput
               id="confirmPassword"
               name="confirmPassword"
@@ -123,7 +125,7 @@ export function SettingsForm({ name, email }: { name: string; email: string }) {
             disabled={passwordPending}
             className="h-11 rounded-full bg-primary px-8 hover:bg-sky-600"
           >
-            {passwordPending ? 'Resetting...' : 'Reset password'}
+            {passwordPending ? dict.settings.resetting : dict.settings.resetPasswordBtn}
           </Button>
         </form>
       </section>

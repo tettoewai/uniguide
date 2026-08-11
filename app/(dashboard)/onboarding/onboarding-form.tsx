@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { updateUserPreferences } from "@/app/actions/user";
+import { useLocale } from "@/components/providers/locale-provider";
 
 const formSchema = z.object({
   budget: z.coerce.number().min(0).nullable(),
@@ -58,28 +59,43 @@ type Props = {
   initialValues: OnboardingFormValues;
 };
 
-const STEP_DEFS = [
+const STEP_DEFS = (dict: {
+  stepBudgetTitle: string;
+  stepBudgetSubtitle: string;
+  stepMarksTitle: string;
+  stepMarksSubtitle: string;
+  stepMajorsTitle: string;
+  stepMajorsSubtitle: string;
+  stepHobbiesTitle: string;
+  stepHobbiesSubtitle: string;
+}): StepDef[] => [
   {
     icon: Wallet,
-    title: "Budget & location",
-    subtitle: "How do you plan to fund your studies?",
+    title: dict.stepBudgetTitle,
+    subtitle: dict.stepBudgetSubtitle,
   },
   {
     icon: ScrollText,
-    title: "Your marks",
-    subtitle: "Grade 12 subject marks out of 100.",
+    title: dict.stepMarksTitle,
+    subtitle: dict.stepMarksSubtitle,
   },
   {
     icon: GraduationCap,
-    title: "Preferred majors",
-    subtitle: "Pick every field that interests you.",
+    title: dict.stepMajorsTitle,
+    subtitle: dict.stepMajorsSubtitle,
   },
   {
     icon: Heart,
-    title: "Hobbies & interests",
-    subtitle: "We match these to the right course.",
+    title: dict.stepHobbiesTitle,
+    subtitle: dict.stepHobbiesSubtitle,
   },
 ];
+
+type StepDef = {
+  icon: LucideIcon;
+  title: string;
+  subtitle: string;
+};
 
 const HOBBY_ICONS: Record<string, LucideIcon> = {
   "hobby-coding": Code,
@@ -115,6 +131,8 @@ export function OnboardingForm({
 }: Props) {
   const [isPending, startTransition] = useTransition();
   const [locating, setLocating] = useState(false);
+  const { dict } = useLocale();
+  const steps = STEP_DEFS(dict.onboarding);
 
   const {
     register,
@@ -157,7 +175,7 @@ export function OnboardingForm({
 
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported by your browser");
+      toast.error(dict.onboarding.geolocationUnsupported);
       return;
     }
     setLocating(true);
@@ -166,22 +184,22 @@ export function OnboardingForm({
         setValue("latitude", position.coords.latitude, { shouldValidate: true });
         setValue("longitude", position.coords.longitude, { shouldValidate: true });
         setLocating(false);
-        toast.success("Location captured");
+        toast.success(dict.onboarding.locationCaptured);
       },
       (error) => {
         setLocating(false);
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            toast.error("Location permission denied. Please enter manually.");
+            toast.error(dict.onboarding.permissionDenied);
             break;
           case error.POSITION_UNAVAILABLE:
-            toast.error("Location unavailable. Please enter manually.");
+            toast.error(dict.onboarding.positionUnavailable);
             break;
           case error.TIMEOUT:
-            toast.error("Location request timed out. Please try again.");
+            toast.error(dict.onboarding.timeout);
             break;
           default:
-            toast.error("Could not get location. Please enter manually.");
+            toast.error(dict.onboarding.locationError);
         }
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
@@ -191,37 +209,37 @@ export function OnboardingForm({
   const onSubmit = (values: OnboardingFormValues) => {
     startTransition(async () => {
       await updateUserPreferences(values);
-      toast.success("Preferences saved");
+      toast.success(dict.onboarding.preferencesSaved);
     });
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-      <StepCard step={STEP_DEFS[0]}>
+      <StepCard step={steps[0]}>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="budget">Annual budget (MMK)</Label>
+            <Label htmlFor="budget">{dict.onboarding.budgetLabel}</Label>
             <Input
               id="budget"
               type="number"
               min={0}
-              placeholder="e.g. 2000000"
+              placeholder={dict.onboarding.budgetPlaceholder}
               className={pillInputClass}
               {...register("budget")}
             />
           </div>
           <div className="space-y-2">
-            <Label>Preferred city</Label>
+            <Label>{dict.onboarding.preferredCity}</Label>
             <ControllerSelect
               items={Object.fromEntries(cities.map((c) => [c.id, c.name]))}
               current={selectedCityId}
-              placeholder="Choose a city"
+              placeholder={dict.onboarding.chooseCity}
               onPick={(v) => setValue("preferredCityId", v, { shouldValidate: true })}
             />
           </div>
         </div>
         <div className="mt-4 space-y-2">
-          <Label>Your location</Label>
+          <Label>{dict.onboarding.yourLocation}</Label>
           <div className="flex gap-2">
             <button
               type="button"
@@ -234,7 +252,7 @@ export function OnboardingForm({
               ) : (
                 <MapPin className="size-4" />
               )}
-              {locating ? "Getting location…" : "Use my location"}
+              {locating ? dict.onboarding.gettingLocation : dict.onboarding.useMyLocation}
             </button>
             {lat !== null && lon !== null && (
               <span className="inline-flex items-center gap-1.5 rounded-md bg-secondary px-3 py-2 text-xs font-medium text-secondary-foreground">
@@ -244,14 +262,14 @@ export function OnboardingForm({
             )}
           </div>
           <p className="text-xs text-muted-foreground">
-            We use your coordinates to find universities closest to you.
+            {dict.onboarding.locationHint}
           </p>
           <input type="hidden" {...register("latitude")} />
           <input type="hidden" {...register("longitude")} />
         </div>
       </StepCard>
 
-      <StepCard step={STEP_DEFS[1]}>
+      <StepCard step={steps[1]}>
         <div className="grid gap-4 sm:grid-cols-2">
           {subjects.map((subject) => (
             <div key={subject.id} className="space-y-2">
@@ -261,7 +279,7 @@ export function OnboardingForm({
                 type="number"
                 min={0}
                 max={100}
-                placeholder="0 - 100"
+                placeholder={dict.onboarding.marksPlaceholder}
                 className={pillInputClass}
                 {...register(`marks.${subject.id}`)}
               />
@@ -270,7 +288,7 @@ export function OnboardingForm({
         </div>
       </StepCard>
 
-      <StepCard step={STEP_DEFS[2]}>
+      <StepCard step={steps[2]}>
         <div className="flex flex-wrap gap-2">
           {majors.map((major) => {
             const active = selectedMajors.includes(major.id);
@@ -290,7 +308,7 @@ export function OnboardingForm({
         </div>
       </StepCard>
 
-      <StepCard step={STEP_DEFS[3]}>
+      <StepCard step={steps[3]}>
         <div className="flex flex-wrap gap-2">
           {hobbies.map((hobby) => {
             const active = selectedHobbies.includes(hobby.id);
@@ -325,7 +343,7 @@ export function OnboardingForm({
         disabled={isPending}
         className="inline-flex w-full items-center justify-center rounded-full bg-primary px-12 py-4 text-base font-semibold text-primary-foreground transition-all duration-300 hover:bg-sky-600 disabled:pointer-events-none disabled:opacity-60"
       >
-        {isPending ? "Matching you up…" : "Get my recommendations"}
+        {isPending ? dict.onboarding.submitting : dict.onboarding.submit}
       </button>
     </form>
   );
@@ -335,7 +353,7 @@ function StepCard({
   step: { icon: Icon, title, subtitle },
   children,
 }: {
-  step: (typeof STEP_DEFS)[number];
+  step: StepDef;
   children: React.ReactNode;
 }) {
   return (

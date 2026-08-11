@@ -4,6 +4,8 @@ import Link from 'next/link'
 import L from 'leaflet'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import type { MapUniversity } from './MapWrapper'
+import { useLocale } from '@/components/providers/locale-provider'
+import { format } from '@/lib/i18n/config'
 
 const uniguideIcon = L.divIcon({
   className: 'uniguide-marker-wrap bg-none border-0',
@@ -14,6 +16,7 @@ const uniguideIcon = L.divIcon({
 })
 
 export default function LeafletMap({ universities }: { universities: MapUniversity[] }) {
+  const { dict } = useLocale()
   const center: [number, number] =
     universities.length > 0
       ? [universities[0].latitude, universities[0].longitude]
@@ -35,12 +38,12 @@ export default function LeafletMap({ universities }: { universities: MapUniversi
           <Popup>
             <div className="space-y-1">
               <p className="font-medium">{uni.name}</p>
-              <p className="text-xs text-muted-foreground">Fit score: {Math.round(uni.score * 100)}%</p>
+              <p className="text-xs text-muted-foreground">{format(dict.map.fitScore, { score: Math.round(uni.score * 100) })}</p>
               <Link
                 href={`/universities/${uni.id}`}
                 className="text-xs font-medium text-primary underline underline-offset-2"
               >
-                View details
+                {dict.matchCard.viewDetails}
               </Link>
             </div>
           </Popup>

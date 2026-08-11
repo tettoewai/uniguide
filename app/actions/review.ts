@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { auth } from '@/auth'
+import { getDictionary } from '@/lib/i18n/server'
 
 export type ReviewFormState = { error?: string; success?: string }
 
@@ -14,6 +15,7 @@ export async function addReview(
 ): Promise<ReviewFormState> {
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
+  const dict = await getDictionary()
 
   const parsed = z
     .object({
@@ -26,7 +28,7 @@ export async function addReview(
     })
 
   if (!parsed.success) {
-    return { error: 'Please pick a rating between 1 and 5 stars.' }
+    return { error: dict.actions.ratingRange }
   }
 
   const existing = await prisma.review.findUnique({
@@ -51,5 +53,5 @@ export async function addReview(
     })
   }
 
-  return { success: 'Thank you — your review was saved.' }
+  return { success: dict.actions.reviewSaved }
 }

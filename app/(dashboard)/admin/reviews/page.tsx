@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db'
 import { ReviewsAdmin } from '@/components/admin/ReviewsAdmin'
+import { getDictionary } from '@/lib/i18n/server'
 
 export default async function AdminReviewsPage() {
   const reviews = await prisma.review.findMany({
@@ -9,15 +10,16 @@ export default async function AdminReviewsPage() {
       university: { select: { name: true } },
     },
   })
+  const dict = await getDictionary()
 
   return (
     <>
       <div>
         <h1 className="text-primary font-display text-4xl font-bold tracking-tight sm:text-5xl">
-          Reviews
+          {dict.admin.reviews.title}
         </h1>
         <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-          Review student feedback and remove inappropriate content.
+          {dict.admin.reviews.subtitle}
         </p>
       </div>
 

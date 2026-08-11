@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { UniversityAdmin } from "@/components/admin/UniversityAdmin";
+import { getDictionary } from "@/lib/i18n/server";
 
 export default async function AdminUniversitiesPage() {
   const [universities, majors, subjects, cities] = await Promise.all([
@@ -14,15 +15,16 @@ export default async function AdminUniversitiesPage() {
     prisma.subject.findMany({ orderBy: { name: 'asc' } }),
     prisma.city.findMany({ orderBy: { name: 'asc' } }),
   ]);
+  const dict = await getDictionary();
 
   return (
     <>
       <div className="mb-2">
         <h1 className="text-primary font-display text-4xl font-bold tracking-tight sm:text-5xl">
-          Manage universities
+          {dict.admin.universities.title}
         </h1>
         <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-          Add or remove universities, their programs and subject requirements.
+          {dict.admin.universities.subtitle}
         </p>
       </div>
 

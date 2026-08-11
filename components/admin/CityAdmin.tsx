@@ -24,6 +24,8 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
+import { useLocale } from '@/components/providers/locale-provider'
+import { format } from '@/lib/i18n/config'
 
 type City = { id: string; name: string; latitude: number | null; longitude: number | null }
 
@@ -42,6 +44,9 @@ export function CityAdmin({
   onDelete: (id: string) => Promise<{ error?: string }>
 }) {
   const router = useRouter()
+  const { dict } = useLocale()
+  const s = dict.admin.cities
+
   const [isPending, startTransition] = useTransition()
   const [open, setOpen] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
@@ -87,7 +92,7 @@ export function CityAdmin({
       if (res.error) {
         toast.error(res.error)
       } else {
-        toast.success(`"${cityName}" deleted`)
+        toast.success(format(s.deleted, { name: cityName }))
         setConfirmId(null)
         router.refresh()
       }
@@ -104,7 +109,7 @@ export function CityAdmin({
       } else {
         setOpen(false)
         resetForm()
-        toast.success(editing ? 'City updated' : 'City created')
+        toast.success(editing ? s.updated : s.created)
         router.refresh()
       }
     })
@@ -118,9 +123,9 @@ export function CityAdmin({
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name..."
+            placeholder={s.searchPlaceholder}
             className={cn(inputClass, 'pl-11')}
-            aria-label="Search cities"
+            aria-label={s.searchAria}
           />
         </div>
         <Button
@@ -128,7 +133,7 @@ export function CityAdmin({
           className="h-12 rounded-full bg-primary px-8 hover:bg-sky-600"
         >
           <Plus className="mr-1.5 size-4" />
-          Add city
+          {s.add}
         </Button>
       </div>
 
@@ -136,9 +141,9 @@ export function CityAdmin({
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className="px-5 text-muted-foreground">Name</TableHead>
-              <TableHead className="text-muted-foreground">Latitude</TableHead>
-              <TableHead className="text-muted-foreground">Longitude</TableHead>
+              <TableHead className="px-5 text-muted-foreground">{s.nameCol}</TableHead>
+              <TableHead className="text-muted-foreground">{s.latCol}</TableHead>
+              <TableHead className="text-muted-foreground">{s.lonCol}</TableHead>
               <TableHead className="w-28 px-5" />
             </TableRow>
           </TableHeader>
@@ -147,10 +152,10 @@ export function CityAdmin({
               <TableRow>
                 <TableCell colSpan={4} className="px-5 py-16 text-center">
                   <p className="font-medium text-foreground">
-                    {search ? 'No cities match your search.' : 'No cities yet.'}
+                    {search ? s.noResultsSearchTitle : s.noResultsTitle}
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {search ? 'Try a different name.' : 'Add your first city.'}
+                    {search ? s.noResultsSearchBody : s.noResultsBody}
                   </p>
                 </TableCell>
               </TableRow>
@@ -171,7 +176,7 @@ export function CityAdmin({
                           variant="ghost"
                           size="icon-sm"
                           onClick={() => setConfirmId(null)}
-                          aria-label="Cancel delete"
+                          aria-label={dict.admin.catalog.cancelDeleteAria}
                           className="rounded-full text-muted-foreground"
                         >
                           <X className="size-4" />
@@ -181,7 +186,7 @@ export function CityAdmin({
                           size="icon-sm"
                           onClick={() => onDeleteItem(city.id, city.name)}
                           disabled={isPending}
-                          aria-label={`Confirm delete ${city.name}`}
+                          aria-label={format(dict.admin.catalog.confirmDeleteAria, { name: city.name })}
                           className="rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100"
                         >
                           {isPending ? (
@@ -198,7 +203,7 @@ export function CityAdmin({
                           size="icon-sm"
                           onClick={() => openEdit(city)}
                           disabled={isPending}
-                          aria-label={`Edit ${city.name}`}
+                          aria-label={format(dict.admin.catalog.editAria, { name: city.name })}
                           className="rounded-full text-muted-foreground hover:bg-sky-50 hover:text-sky-600"
                         >
                           <Pencil className="size-4" />
@@ -208,7 +213,7 @@ export function CityAdmin({
                           size="icon-sm"
                           onClick={() => setConfirmId(city.id)}
                           disabled={isPending}
-                          aria-label={`Delete ${city.name}`}
+                          aria-label={format(dict.admin.catalog.deleteAria, { name: city.name })}
                           className="rounded-full text-muted-foreground hover:bg-rose-50 hover:text-rose-600"
                         >
                           <Trash2 className="size-4" />
@@ -227,15 +232,15 @@ export function CityAdmin({
         <DialogContent className="max-h-[85vh] overflow-y-auto rounded-3xl sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="font-display text-xl font-bold tracking-tight">
-              {editing ? 'Edit city' : 'Add a city'}
+              {editing ? s.editTitle : s.addTitle}
             </DialogTitle>
             <DialogDescription>
-              {editing ? 'Update the city details.' : 'Add a new city for students and universities.'}
+              {editing ? s.updateHint : s.addHint}
             </DialogDescription>
           </DialogHeader>
           <form action={onSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="city-name">Name *</Label>
+              <Label htmlFor="city-name">{dict.admin.catalog.nameRequired}</Label>
               <Input
                 id="city-name"
                 name="name"
@@ -248,7 +253,7 @@ export function CityAdmin({
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="city-latitude">Latitude (optional)</Label>
+                <Label htmlFor="city-latitude">{s.latitude}</Label>
                 <Input
                   id="city-latitude"
                   name="latitude"
@@ -258,12 +263,12 @@ export function CityAdmin({
                   max={90}
                   value={latitude}
                   onChange={(e) => setLatitude(e.target.value)}
-                  placeholder="e.g. 16.8661"
+                  placeholder={s.latPlaceholder}
                   className={inputClass}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="city-longitude">Longitude (optional)</Label>
+                <Label htmlFor="city-longitude">{s.longitude}</Label>
                 <Input
                   id="city-longitude"
                   name="longitude"
@@ -273,7 +278,7 @@ export function CityAdmin({
                   max={180}
                   value={longitude}
                   onChange={(e) => setLongitude(e.target.value)}
-                  placeholder="e.g. 96.1951"
+                  placeholder={s.lonPlaceholder}
                   className={inputClass}
                 />
               </div>
@@ -290,7 +295,7 @@ export function CityAdmin({
                 onClick={() => setOpen(false)}
                 className="h-11 rounded-full border-border bg-background/70 px-6"
               >
-                Cancel
+                {dict.common.cancel}
               </Button>
               <Button
                 type="submit"
@@ -300,10 +305,10 @@ export function CityAdmin({
                 {isPending ? (
                   <>
                     <Loader2 className="mr-1.5 size-4 animate-spin" />
-                    {editing ? 'Saving...' : 'Creating...'}
+                    {editing ? dict.common.saving : dict.common.creating}
                   </>
                 ) : (
-                  editing ? 'Save changes' : 'Create city'
+                  editing ? dict.common.saveChanges : s.create
                 )}
               </Button>
             </DialogFooter>

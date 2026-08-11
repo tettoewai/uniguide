@@ -14,8 +14,10 @@ import {
 } from "@/components/ui/card";
 import { registerUser, type AuthFormState } from "@/app/actions/auth";
 import { PasswordInput } from "@/components/ui/password-input";
+import { useLocale } from "@/components/providers/locale-provider";
 
 export function RegisterForm() {
+  const { dict } = useLocale();
   const [state, formAction, isPending] = useActionState<
     AuthFormState,
     FormData
@@ -39,53 +41,53 @@ export function RegisterForm() {
     <Card className="glass rounded-3xl p-4">
       <CardHeader className="text-center">
         <CardTitle className="font-display text-3xl font-bold tracking-tight">
-          Create your account
+          {dict.auth.register.title}
         </CardTitle>
         <CardDescription>
-          Join UniGuide and get personalized university recommendations.
+          {dict.auth.register.description}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form action={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Full name</Label>
+            <Label htmlFor="name">{dict.auth.register.fullName}</Label>
             <Input
               id="name"
               name="name"
-              placeholder="Maung Maung"
+              placeholder={dict.auth.register.fullNamePlaceholder}
               required
               className="h-12 rounded-md border-0 bg-background/80 ring-1 ring-border outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-sky-300"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">{dict.auth.register.email}</Label>
             <Input
               id="email"
               name="email"
               type="email"
-              placeholder="you@example.com"
+              placeholder={dict.auth.register.emailPlaceholder}
               required
               className="h-12 rounded-md border-0 bg-background/80 ring-1 ring-border outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-sky-300"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">{dict.auth.register.password}</Label>
             <PasswordInput
               id="password"
               name="password"
               minLength={6}
-              placeholder="At least 6 characters"
+              placeholder={dict.auth.register.passwordHint}
               required
               className="h-12 rounded-md border-0 bg-background/80 ring-1 ring-border outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-sky-300"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm password</Label>
+            <Label htmlFor="confirmPassword">{dict.auth.register.confirmPassword}</Label>
             <PasswordInput
               id="confirmPassword"
               name="confirmPassword"
               minLength={6}
-              placeholder="Re-enter your password"
+              placeholder={dict.auth.register.confirmPlaceholder}
               required
               value={confirmPassword}
               onChange={(e) => {
@@ -97,7 +99,7 @@ export function RegisterForm() {
           </div>
           {passwordMismatch ? (
             <p className="text-sm text-destructive" role="alert">
-              Passwords do not match.
+              {dict.auth.register.mismatch}
             </p>
           ) : null}
           {state?.error ? (
@@ -110,16 +112,16 @@ export function RegisterForm() {
             className="h-12 w-full rounded-full bg-primary hover:bg-sky-600"
             disabled={isPending}
           >
-            {isPending ? "Creating account..." : "Create account"}
+            {isPending ? dict.auth.register.submitting : dict.auth.register.submit}
           </Button>
         </form>
         <p className="mt-4 text-center text-sm text-muted-foreground">
-          Already have an account?{" "}
+          {dict.auth.register.haveAccount}{" "}
           <Link
             href="/login"
             className="font-medium text-sky-600 underline underline-offset-4"
           >
-            Sign in
+            {dict.auth.register.signIn}
           </Link>
         </p>
       </CardContent>

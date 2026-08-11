@@ -9,17 +9,21 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { toggleFavorite } from "@/app/actions/university";
 import type { RecommendationResult } from "@/app/actions/recommendation";
+import { useLocale } from "@/components/providers/locale-provider";
+import { format } from "@/lib/i18n/config";
+
+type MatchLabelKey = 'marks' | 'budget' | 'majorMatch' | 'interests' | 'location'
 
 const SECTIONS: {
   key: keyof RecommendationResult["breakdown"];
-  label: string;
+  labelKey: MatchLabelKey;
   weight: number;
 }[] = [
-  { key: "marks", label: "Marks", weight: 30 },
-  { key: "budget", label: "Budget", weight: 25 },
-  { key: "major", label: "Major match", weight: 20 },
-  { key: "interest", label: "Interests", weight: 15 },
-  { key: "location", label: "Location", weight: 10 },
+  { key: "marks", labelKey: "marks", weight: 30 },
+  { key: "budget", labelKey: "budget", weight: 25 },
+  { key: "major", labelKey: "majorMatch", weight: 20 },
+  { key: "interest", labelKey: "interests", weight: 15 },
+  { key: "location", labelKey: "location", weight: 10 },
 ];
 
 function matchColor(pct: number) {
@@ -45,6 +49,7 @@ export function RecommendationCard({
 }) {
   const [isFavorite, setIsFavorite] = useState(initialFavorite);
   const [isPending, startTransition] = useTransition();
+  const { dict } = useLocale();
   const scorePct = Math.round(result.score * 100);
 
   const onToggleFavorite = () => {
@@ -52,7 +57,7 @@ export function RecommendationCard({
       const res = await toggleFavorite(result.id);
       setIsFavorite(res.favorited);
       toast.success(
-        res.favorited ? "Added to favorites" : "Removed from favorites",
+        res.favorited ? dict.matchCard.added : dict.matchCard.removed,
       );
     });
   };
@@ -68,7 +73,7 @@ export function RecommendationCard({
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 space-y-2">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
-            #{rank} match
+            {format(dict.matchCard.rank, { rank })}
           </span>
           <Link
             href={`/universities/${result.id}`}
@@ -88,7 +93,7 @@ export function RecommendationCard({
                 {scorePct}%
               </span>
               <span className="text-[9px] font-medium uppercase tracking-wide opacity-80">
-                match
+                {dict.matchCard.match}
               </span>
             </div>
           </div>
@@ -99,7 +104,7 @@ export function RecommendationCard({
             onClick={onToggleFavorite}
             disabled={isPending}
             aria-label={
-              isFavorite ? "Remove from favorites" : "Add to favorites"
+              isFavorite ? dict.matchCard.removeAria : dict.matchCard.addAria
             }
             className="rounded-full bg-card/60 cursor-pointer"
           >
@@ -129,7 +134,7 @@ export function RecommendationCard({
       {/* Overall match bar */}
       <div className="mt-6 space-y-1.5">
         <div className="flex items-center justify-between text-xs font-medium">
-          <span className="text-muted-foreground">Overall fit</span>
+          <span className="text-muted-foreground">{dict.matchCard.overallFit}</span>
           <span className={cn("tabular-nums", matchText(scorePct))}>
             {scorePct}%
           </span>
@@ -152,7 +157,7 @@ export function RecommendationCard({
           return (
             <div key={s.key} className="flex items-center gap-3">
               <span className="w-24 shrink-0 text-xs font-medium text-muted-foreground">
-                {s.label}
+                {dict.matchCard[s.labelKey]}
               </span>
               <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
                 <div
@@ -176,7 +181,7 @@ export function RecommendationCard({
           href={`/universities/${result.id}`}
           className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-sky-600 transition-colors hover:text-sky-700"
         >
-          View details
+          {dict.matchCard.viewDetails}
           <ArrowUpRight className="size-4" />
         </Link>
       </div>

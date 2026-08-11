@@ -7,6 +7,8 @@ import { Star, Trash2, Check, X, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { deleteReview } from '@/app/actions/admin'
 import { useState } from 'react'
+import { useLocale } from '@/components/providers/locale-provider'
+import { format } from '@/lib/i18n/config'
 
 type ReviewRow = {
   id: string
@@ -19,6 +21,8 @@ type ReviewRow = {
 
 export function ReviewsAdmin({ reviews }: { reviews: ReviewRow[] }) {
   const router = useRouter()
+  const { dict } = useLocale()
+  const s = dict.admin.reviews
   const [isPending, startTransition] = useTransition()
   const [confirmId, setConfirmId] = useState<string | null>(null)
 
@@ -28,7 +32,7 @@ export function ReviewsAdmin({ reviews }: { reviews: ReviewRow[] }) {
       if (res.error) {
         toast.error(res.error)
       } else {
-        toast.success('Review deleted')
+        toast.success(s.deleted)
         setConfirmId(null)
         router.refresh()
       }
@@ -39,8 +43,8 @@ export function ReviewsAdmin({ reviews }: { reviews: ReviewRow[] }) {
     <div className="space-y-4">
       {reviews.length === 0 ? (
         <div className="glass rounded-3xl px-6 py-16 text-center">
-          <p className="font-medium text-foreground">No reviews yet.</p>
-          <p className="mt-1 text-sm text-muted-foreground">Student reviews will appear here.</p>
+          <p className="font-medium text-foreground">{s.emptyTitle}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{s.emptyBody}</p>
         </div>
       ) : (
         reviews.map((r) => (
@@ -73,7 +77,7 @@ export function ReviewsAdmin({ reviews }: { reviews: ReviewRow[] }) {
                       variant="ghost"
                       size="icon-sm"
                       onClick={() => setConfirmId(null)}
-                      aria-label="Cancel delete"
+                      aria-label={dict.admin.catalog.cancelDeleteAria}
                       className="rounded-full text-muted-foreground"
                     >
                       <X className="size-4" />
@@ -83,7 +87,7 @@ export function ReviewsAdmin({ reviews }: { reviews: ReviewRow[] }) {
                       size="icon-sm"
                       onClick={() => onDelete(r.id)}
                       disabled={isPending}
-                      aria-label={`Confirm delete review by ${r.userName}`}
+                      aria-label={format(s.confirmDeleteAria, { name: r.userName })}
                       className="rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100"
                     >
                       {isPending ? (
@@ -99,7 +103,7 @@ export function ReviewsAdmin({ reviews }: { reviews: ReviewRow[] }) {
                     size="icon-sm"
                     onClick={() => setConfirmId(r.id)}
                     disabled={isPending}
-                    aria-label={`Delete review by ${r.userName}`}
+                    aria-label={format(s.deleteAria, { name: r.userName })}
                     className="rounded-full text-muted-foreground hover:bg-rose-50 hover:text-rose-600"
                   >
                     <Trash2 className="size-4" />

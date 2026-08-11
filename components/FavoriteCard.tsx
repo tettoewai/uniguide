@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toggleFavorite } from "@/app/actions/university";
+import { useLocale } from "@/components/providers/locale-provider";
 
 export function FavoriteCard({
   universityId,
@@ -20,6 +21,7 @@ export function FavoriteCard({
   city: string;
   majors: string[];
 }) {
+  const { dict } = useLocale();
   const [removed, setRemoved] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -27,7 +29,7 @@ export function FavoriteCard({
     startTransition(async () => {
       await toggleFavorite(universityId);
       setRemoved(true);
-      toast.success("Removed from favorites");
+      toast.success(dict.matchCard.removed);
     });
   };
 
@@ -48,7 +50,7 @@ export function FavoriteCard({
             variant="ghost"
             onClick={onRemove}
             disabled={isPending}
-            aria-label="Remove from favorites"
+            aria-label={dict.matchCard.removeAria}
             className="rounded-full bg-card/60"
           >
             <Heart className="h-5 w-5 fill-rose-500 text-rose-500" />

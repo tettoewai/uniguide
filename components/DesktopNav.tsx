@@ -4,23 +4,25 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Sparkles, Heart, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useLocale } from '@/components/providers/locale-provider'
 
 type Item = { href: string; label: string; icon: typeof Home }
 
-const userNavItems: Item[] = [
-  { href: '/dashboard', label: 'Dashboard', icon: Home },
-  { href: '/recommendations', label: 'Recommendations', icon: Sparkles },
-  { href: '/favorites', label: 'Favorites', icon: Heart },
-  { href: '/settings', label: 'Settings', icon: Settings },
-]
-
 export function DesktopNav({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname()
+  const { dict } = useLocale()
+
+  const userNavItems: Item[] = [
+    { href: '/dashboard', label: dict.nav.dashboard, icon: Home },
+    { href: '/recommendations', label: dict.nav.recommendations, icon: Sparkles },
+    { href: '/favorites', label: dict.nav.favorites, icon: Heart },
+    { href: '/settings', label: dict.nav.settings, icon: Settings },
+  ]
 
   if (isAdmin) return null
 
   return (
-    <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
+    <nav className="hidden items-center gap-1 md:flex" aria-label={dict.nav.primary}>
       {userNavItems.map((item) => {
         const active =
           pathname === item.href || pathname.startsWith(`${item.href}/`)

@@ -1,24 +1,27 @@
 import Link from 'next/link'
 import { buttonVariants } from '@/components/ui/button'
+import { LocaleSwitcher } from '@/components/LocaleSwitcher'
 import { cn } from '@/lib/utils'
+import { getDictionary } from '@/lib/i18n/server'
 import { Sparkles, MapPinned, BookmarkCheck } from 'lucide-react'
 
-export default function HomePage() {
+export default async function HomePage() {
+  const dict = await getDictionary()
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-4 py-16">
       <main className="mx-auto flex w-full max-w-4xl flex-col items-center gap-10 text-center">
+        <LocaleSwitcher />
         <div className="space-y-6">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-4 py-1.5 text-xs font-semibold text-secondary-foreground">
             <Sparkles className="size-3.5" />
-            Built for Myanmar students
+            {dict.landing.badge}
           </span>
 <h1 className="font-display text-5xl font-bold tracking-tight text-foreground sm:text-6xl md:text-7xl">
-          Find the university that{' '}
-          <span className="text-sky-600">fits you best</span>
+          {dict.landing.heroTitle}{' '}
+          <span className="text-sky-600">{dict.landing.heroHighlight}</span>
         </h1>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground sm:text-xl">
-            Enter your Grade 12 marks, budget, preferred city and interests. UniGuide scores every
-            university and shows you the best matches.
+            {dict.landing.subtitle}
           </p>
         </div>
 
@@ -30,7 +33,7 @@ export default function HomePage() {
               'h-12 rounded-full bg-primary px-10 hover:bg-sky-600',
             )}
           >
-            Get started
+            {dict.landing.getStarted}
           </Link>
           <Link
             href="/login"
@@ -39,7 +42,7 @@ export default function HomePage() {
               'h-12 rounded-full border-border bg-card/60 px-10 backdrop-blur-md hover:bg-card/90',
             )}
           >
-            Sign in
+            {dict.landing.signIn}
           </Link>
         </div>
 
@@ -47,18 +50,18 @@ export default function HomePage() {
           {[
             {
               icon: Sparkles,
-              title: 'Smart scoring',
-              desc: 'Marks, budget, majors, interests and location weighted into one fit score.',
+              title: dict.landing.features[0].title,
+              desc: dict.landing.features[0].desc,
             },
             {
               icon: MapPinned,
-              title: 'Interactive map',
-              desc: 'See every recommended university on an interactive campus map.',
+              title: dict.landing.features[1].title,
+              desc: dict.landing.features[1].desc,
             },
             {
               icon: BookmarkCheck,
-              title: 'Favorites & reviews',
-              desc: 'Save shortlists and read reviews from current students.',
+              title: dict.landing.features[2].title,
+              desc: dict.landing.features[2].desc,
             },
           ].map((f) => (
             <div

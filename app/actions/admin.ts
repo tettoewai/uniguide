@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { prisma } from '@/lib/db'
 import { auth } from '@/auth'
+import { getDictionary } from '@/lib/i18n/server'
+import { format } from '@/lib/i18n/config'
 
 async function requireAdmin() {
   const session = await auth()
@@ -13,7 +15,9 @@ async function requireAdmin() {
 
 export type AdminFormState = { error?: string }
 
-function parseUniversityForm(formData: FormData) {
+type Dict = Awaited<ReturnType<typeof getDictionary>>
+
+function parseUniversityForm(formData: FormData, dict: Dict) {
   const majorIds = formData
     .getAll('majorIds')
     .map((v) => String(v))
@@ -36,7 +40,7 @@ function parseUniversityForm(formData: FormData) {
         formData.get('totalMarkRequired') === '' ? null : formData.get('totalMarkRequired'),
     })
   if (!parsed.success) {
-    return { error: 'Please fill in name and city.' }
+    return { error: dict.actions.fillNameCity }
   }
 
   const subjectReqs: Record<string, number> = {}
@@ -50,7 +54,7 @@ function parseUniversityForm(formData: FormData) {
 
   if (parsed.data.totalMarkRequired !== null && Object.keys(subjectReqs).length > 0) {
     return {
-      error: 'Set either an overall average or subject minimum marks, not both.',
+      error: dict.actions.eitherOr,
     }
   }
 
@@ -62,8 +66,9 @@ export async function createUniversity(
   formData: FormData,
 ): Promise<AdminFormState> {
   await requireAdmin()
+  const dict = await getDictionary()
 
-  const result = parseUniversityForm(formData)
+  const result = parseUniversityForm(formData, dict)
   if ('error' in result) return { error: result.error }
 
   await prisma.university.create({
@@ -93,8 +98,9 @@ export async function updateUniversity(
   formData: FormData,
 ): Promise<AdminFormState> {
   await requireAdmin()
+  const dict = await getDictionary()
 
-  const result = parseUniversityForm(formData)
+  const result = parseUniversityForm(formData, dict)
   if ('error' in result) return { error: result.error }
 
   await prisma.$transaction([
@@ -126,6 +132,7 @@ export async function updateUniversity(
 
 export async function deleteUniversity(id: string): Promise<{ error?: string }> {
   await requireAdmin()
+  const dict = await getDictionary()
 
   try {
     await prisma.$transaction([
@@ -137,7 +144,7 @@ export async function deleteUniversity(id: string): Promise<{ error?: string }> 
     await prisma.university.delete({ where: { id } })
     return {}
   } catch {
-    return { error: 'This university has favorites or reviews and cannot be deleted.' }
+    return { error: dict.actions.cannotDeleteUniversity }
   }
 }
 
@@ -146,17 +153,18 @@ export async function createSubject(
   formData: FormData,
 ): Promise<AdminFormState> {
   await requireAdmin()
+  const dict = await getDictionary()
 
   const parsed = z
-    .object({ name: z.string().min(1, 'Name is required').max(100) })
+    .object({ name: z.string().min(1, dict.actions.nameRequired).max(100) })
     .safeParse({ name: formData.get('name') })
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Invalid name' }
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? dict.actions.invalidName }
 
   try {
     await prisma.subject.create({ data: { name: parsed.data.name.trim() } })
     return { error: undefined }
   } catch {
-    return { error: 'A subject with this name already exists.' }
+    return { error: format(dict.actions.exists, { kind: dict.admin.kinds.subject.toLowerCase() }) }
   }
 }
 
@@ -166,27 +174,29 @@ export async function updateSubject(
   formData: FormData,
 ): Promise<AdminFormState> {
   await requireAdmin()
+  const dict = await getDictionary()
 
   const parsed = z
-    .object({ name: z.string().min(1, 'Name is required').max(100) })
+    .object({ name: z.string().min(1, dict.actions.nameRequired).max(100) })
     .safeParse({ name: formData.get('name') })
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Invalid name' }
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? dict.actions.invalidName }
 
   try {
     await prisma.subject.update({ where: { id }, data: { name: parsed.data.name.trim() } })
     return { error: undefined }
   } catch {
-    return { error: 'A subject with this name already exists.' }
+    return { error: format(dict.actions.exists, { kind: dict.admin.kinds.subject.toLowerCase() }) }
   }
 }
 
 export async function deleteSubject(id: string): Promise<{ error?: string }> {
   await requireAdmin()
+  const dict = await getDictionary()
   try {
     await prisma.subject.delete({ where: { id } })
     return {}
   } catch {
-    return { error: 'This subject is used by requirements or marks and cannot be deleted.' }
+    return { error: dict.actions.cannotDeleteSubject }
   }
 }
 
@@ -195,17 +205,18 @@ export async function createMajor(
   formData: FormData,
 ): Promise<AdminFormState> {
   await requireAdmin()
+  const dict = await getDictionary()
 
   const parsed = z
-    .object({ name: z.string().min(1, 'Name is required').max(100) })
+    .object({ name: z.string().min(1, dict.actions.nameRequired).max(100) })
     .safeParse({ name: formData.get('name') })
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Invalid name' }
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? dict.actions.invalidName }
 
   try {
     await prisma.major.create({ data: { name: parsed.data.name.trim() } })
     return { error: undefined }
   } catch {
-    return { error: 'A major with this name already exists.' }
+    return { error: format(dict.actions.exists, { kind: dict.admin.kinds.major.toLowerCase() }) }
   }
 }
 
@@ -215,27 +226,29 @@ export async function updateMajor(
   formData: FormData,
 ): Promise<AdminFormState> {
   await requireAdmin()
+  const dict = await getDictionary()
 
   const parsed = z
-    .object({ name: z.string().min(1, 'Name is required').max(100) })
+    .object({ name: z.string().min(1, dict.actions.nameRequired).max(100) })
     .safeParse({ name: formData.get('name') })
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Invalid name' }
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? dict.actions.invalidName }
 
   try {
     await prisma.major.update({ where: { id }, data: { name: parsed.data.name.trim() } })
     return { error: undefined }
   } catch {
-    return { error: 'A major with this name already exists.' }
+    return { error: format(dict.actions.exists, { kind: dict.admin.kinds.major.toLowerCase() }) }
   }
 }
 
 export async function deleteMajor(id: string): Promise<{ error?: string }> {
   await requireAdmin()
+  const dict = await getDictionary()
   try {
     await prisma.major.delete({ where: { id } })
     return {}
   } catch {
-    return { error: 'This major is linked to universities or hobbies and cannot be deleted.' }
+    return { error: dict.actions.cannotDeleteMajor }
   }
 }
 
@@ -244,19 +257,20 @@ export async function createHobby(
   formData: FormData,
 ): Promise<AdminFormState> {
   await requireAdmin()
+  const dict = await getDictionary()
 
   const parsed = z
     .object({
-      name: z.string().min(1, 'Name is required').max(100),
+      name: z.string().min(1, dict.actions.nameRequired).max(100),
       icon: z.string().max(50).nullable(),
-      color: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Pick a valid color').nullable(),
+      color: z.string().regex(/^#[0-9a-fA-F]{6}$/, dict.actions.pickValidColor).nullable(),
     })
     .safeParse({
       name: formData.get('name'),
       icon: formData.get('icon') === '' ? null : formData.get('icon'),
       color: formData.get('color') === '' ? null : formData.get('color'),
     })
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Invalid input' }
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? dict.actions.invalidInput }
 
   try {
     await prisma.hobby.create({
@@ -268,7 +282,7 @@ export async function createHobby(
     })
     return { error: undefined }
   } catch {
-    return { error: 'A hobby with this name already exists.' }
+    return { error: format(dict.actions.exists, { kind: dict.admin.kinds.hobby.toLowerCase() }) }
   }
 }
 
@@ -278,19 +292,20 @@ export async function updateHobby(
   formData: FormData,
 ): Promise<AdminFormState> {
   await requireAdmin()
+  const dict = await getDictionary()
 
   const parsed = z
     .object({
-      name: z.string().min(1, 'Name is required').max(100),
+      name: z.string().min(1, dict.actions.nameRequired).max(100),
       icon: z.string().max(50).nullable(),
-      color: z.string().regex(/^#[0-9a-fA-F]{6}$/, 'Pick a valid color').nullable(),
+      color: z.string().regex(/^#[0-9a-fA-F]{6}$/, dict.actions.pickValidColor).nullable(),
     })
     .safeParse({
       name: formData.get('name'),
       icon: formData.get('icon') === '' ? null : formData.get('icon'),
       color: formData.get('color') === '' ? null : formData.get('color'),
     })
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Invalid input' }
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? dict.actions.invalidInput }
 
   try {
     await prisma.hobby.update({
@@ -303,27 +318,29 @@ export async function updateHobby(
     })
     return { error: undefined }
   } catch {
-    return { error: 'A hobby with this name already exists.' }
+    return { error: format(dict.actions.exists, { kind: dict.admin.kinds.hobby.toLowerCase() }) }
   }
 }
 
 export async function deleteHobby(id: string): Promise<{ error?: string }> {
   await requireAdmin()
+  const dict = await getDictionary()
   try {
     await prisma.hobby.delete({ where: { id } })
     return {}
   } catch {
-    return { error: 'This hobby is linked to users or majors and cannot be deleted.' }
+    return { error: dict.actions.cannotDeleteHobby }
   }
 }
 
 export async function deleteReview(id: string): Promise<{ error?: string }> {
   await requireAdmin()
+  const dict = await getDictionary()
   try {
     await prisma.review.delete({ where: { id } })
     return {}
   } catch {
-    return { error: 'Could not delete this review.' }
+    return { error: dict.actions.cannotDeleteReview }
   }
 }
 
@@ -332,10 +349,11 @@ export async function createCity(
   formData: FormData,
 ): Promise<AdminFormState> {
   await requireAdmin()
+  const dict = await getDictionary()
 
   const parsed = z
     .object({
-      name: z.string().min(1, 'Name is required').max(100),
+      name: z.string().min(1, dict.actions.nameRequired).max(100),
       latitude: z.coerce.number().min(-90).max(90).nullable(),
       longitude: z.coerce.number().min(-180).max(180).nullable(),
     })
@@ -344,7 +362,7 @@ export async function createCity(
       latitude: formData.get('latitude') === '' ? null : formData.get('latitude'),
       longitude: formData.get('longitude') === '' ? null : formData.get('longitude'),
     })
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Invalid input' }
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? dict.actions.invalidInput }
 
   try {
     await prisma.city.create({
@@ -356,7 +374,7 @@ export async function createCity(
     })
     return { error: undefined }
   } catch {
-    return { error: 'A city with this name already exists.' }
+    return { error: format(dict.actions.exists, { kind: dict.admin.kinds.city.toLowerCase() }) }
   }
 }
 
@@ -366,10 +384,11 @@ export async function updateCity(
   formData: FormData,
 ): Promise<AdminFormState> {
   await requireAdmin()
+  const dict = await getDictionary()
 
   const parsed = z
     .object({
-      name: z.string().min(1, 'Name is required').max(100),
+      name: z.string().min(1, dict.actions.nameRequired).max(100),
       latitude: z.coerce.number().min(-90).max(90).nullable(),
       longitude: z.coerce.number().min(-180).max(180).nullable(),
     })
@@ -378,7 +397,7 @@ export async function updateCity(
       latitude: formData.get('latitude') === '' ? null : formData.get('latitude'),
       longitude: formData.get('longitude') === '' ? null : formData.get('longitude'),
     })
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? 'Invalid input' }
+  if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? dict.actions.invalidInput }
 
   try {
     await prisma.city.update({
@@ -391,16 +410,17 @@ export async function updateCity(
     })
     return { error: undefined }
   } catch {
-    return { error: 'A city with this name already exists.' }
+    return { error: format(dict.actions.exists, { kind: dict.admin.kinds.city.toLowerCase() }) }
   }
 }
 
 export async function deleteCity(id: string): Promise<{ error?: string }> {
   await requireAdmin()
+  const dict = await getDictionary()
   try {
     await prisma.city.delete({ where: { id } })
     return {}
   } catch {
-    return { error: 'This city is linked to users or universities and cannot be deleted.' }
+    return { error: dict.actions.cannotDeleteCity }
   }
 }
